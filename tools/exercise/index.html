@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Practice Dependency Web / 练习依赖关系图</title>
+  <link rel="stylesheet" href="../../base.css">
+  <link rel="stylesheet" href="../../theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap" id="app" hidden>
+  <div class="top-row">
+    <div>
+      <h1 data-i18n="h1">Practice Dependency Web</h1>
+      <div class="subtitle" data-i18n="subtitle"></div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="../../index.html" data-i18n="home">Home</a>
+      <div class="lang-toggle">
+        <button type="button" id="btnZh">中文</button>
+        <button type="button" id="btnEn" class="active">EN</button>
+      </div>
+    </div>
+  </div>
+  <div class="legend">
+    <div><span class="dot wf"></span><span data-i18n="legendWF"></span></div>
+    <div><span class="dot sw"></span><span data-i18n="legendSW"></span></div>
+    <div><span class="line"></span><span data-i18n="legendReq"></span></div>
+    <div><span class="line dash"></span><span data-i18n="legendOpt"></span></div>
+    <div class="hint" data-i18n="hint"></div>
+  </div>
+  <div class="diagram-frame thin-scroll" id="frame">
+    <div class="canvas" id="canvas">
+      <svg class="edge-svg" id="edges" viewBox="0 0 2030 1740" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+  <div class="footnote" data-i18n="footnote"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel" role="dialog" aria-modal="true">
+    <div class="panel-header">
+      <div>
+        <div class="panel-book" id="panelBook"></div>
+        <h2 class="panel-title" id="panelTitle"></h2>
+      </div>
+      <button type="button" class="panel-close" id="panelClose" aria-label="Close">×</button>
+    </div>
+    <div class="panel-body" id="panelBody"></div>
+  </div>
+</div>
+<p class="status" id="status" role="status">Loading…</p>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

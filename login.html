@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sign in</title>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body>
+  <main class="page">
+    <h1>Sign in</h1>
+    <form class="stack" id="form">
+      <input id="email" type="email" autocomplete="username" placeholder="Email" required>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Password" required>
+      <p class="error" id="error" role="alert"></p>
+      <button type="submit">Sign in</button>
+    </form>
+  </main>
+  <script type="module">
+    import { sb, HOME_URL } from "./auth.js";
+    const { data } = await sb.auth.getSession();
+    if (data.session) location.replace(HOME_URL);
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = document.getElementById("error");
+      err.textContent = "";
+      const { error } = await sb.auth.signInWithPassword({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+      });
+      if (error) err.textContent = error.message;
+      else location.replace(HOME_URL);
+    });
+  </script>
+</body>
+</html>
