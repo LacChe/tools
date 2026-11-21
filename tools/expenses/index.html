@@ -18,11 +18,14 @@
       <button type="button" id="openSettings" aria-label="Settings">⚙</button>
     </header>
 
-    <form class="stack" id="addForm">
+    <form class="stack compact" id="addForm">
       <label class="field">Date
         <input type="date" id="fDate" required>
       </label>
       <div class="field-row">
+        <label class="field cur-field">Currency
+          <select id="fCurrency" required></select>
+        </label>
         <label class="field">Type
           <select id="fCategory" required>
             <option value="" disabled selected>Type</option>
@@ -32,9 +35,6 @@
           <input type="number" step="any" id="fAmount" required>
         </label>
       </div>
-      <label class="field">Currency
-        <select id="fCurrency" required></select>
-      </label>
       <button type="submit" id="addBtn">Add</button>
       <p class="error" id="formError" role="alert"></p>
       <p class="success" id="formOk" role="status"></p>
