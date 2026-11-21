@@ -10,6 +10,15 @@
   --accent: #c9a24b;
   --accent-2: #4f9d8a;
   --on-accent: #0d0f14;
+  --danger: #e07a7a;
+  --success: #6fb58a;
+  --scrim: rgba(6, 7, 10, 0.72);
+  --panel-bg-top: #181c25;
+  --panel-bg-bottom: #101319;
+  --panel-border: #2c3341;
+  --surface-2: #1c212b;
+  --text-soft: #d9d3c2;
+  --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.5);
   --radius: 10px;
   --font: 'Noto Serif SC', 'PingFang SC', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
 }
@@ -65,7 +74,9 @@ button, .btn {
   font-size: 13px;
   line-height: 1.3;
 }
-.tile img { width: 40px; height: 40px; }
+.tile .icon svg, .tile .icon img { width: 40px; height: 40px; display: block; }
+.icon .c1 { stroke: var(--accent); }
+.icon .c2 { stroke: var(--accent-2); }
 
 .thin-scroll {
   scrollbar-width: thin;
@@ -86,4 +97,25 @@ form.stack input {
   border-radius: var(--radius);
 }
 form.stack button { background: var(--accent); color: var(--on-accent); border: 0; font-weight: 700; }
-.error { color: #e07a7a; min-height: 1.4em; margin: 0; font-size: 14px; }
+.error { color: var(--danger); min-height: 1.4em; margin: 0; font-size: 14px; }
+.success { color: var(--success); min-height: 1.4em; margin: 0; font-size: 14px; }
+
+.status { color: var(--muted); padding: 24px 0; }
+
+.overlay {
+  position: fixed; inset: 0; background: var(--scrim);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.18s ease; z-index: 50; padding: 16px;
+}
+.overlay.open { opacity: 1; pointer-events: auto; }
+.panel {
+  background: linear-gradient(180deg, var(--panel-bg-top), var(--panel-bg-bottom));
+  border: 1px solid var(--panel-border); border-radius: var(--radius);
+  max-width: 640px; width: 100%; max-height: 82vh; overflow-y: auto;
+  padding: 22px 22px 26px; transform: translateY(10px); transition: transform 0.18s ease;
+  box-shadow: var(--shadow-panel);
+}
+.overlay.open .panel { transform: translateY(0); }
+.panel-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+.panel-title { font-size: 20px; font-weight: 600; margin: 0; line-height: 1.4; }
+.panel-close { width: 44px; height: 44px; padding: 0; border-radius: 6px; flex-shrink: 0; }

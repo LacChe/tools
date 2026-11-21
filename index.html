@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-app="hub">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,23 +17,36 @@
     <ul class="grid" id="grid"></ul>
   </main>
   <script type="module">
-    import { requireAuth, signOut } from "./auth.js";
+    import { sb, requireAuth, signOut } from "./auth.js";
     await requireAuth();
     document.getElementById("app").hidden = false;
     document.getElementById("signout").addEventListener("click", signOut);
     const tools = await (await fetch("tools.json")).json();
-    document.getElementById("grid").append(...tools.map((t) => {
+    const { data: rows, error } = await sb.from("hub_app_access").select("app_id");
+    const allowed = error ? null : new Set(rows.map((r) => r.app_id));
+    const visible = allowed ? tools.filter((t) => allowed.has(t.id)) : tools;
+    const items = await Promise.all(visible.map(async (t) => {
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.className = "tile";
       a.href = t.path;
-      const img = document.createElement("img");
-      img.src = t.icon;
-      img.alt = "";
-      a.append(img, document.createTextNode(t.name));
+      const icon = document.createElement("span");
+      icon.className = "icon";
+      icon.setAttribute("aria-hidden", "true");
+      try {
+        const r = await fetch(t.icon);
+        if (!r.ok) throw new Error();
+        icon.innerHTML = await r.text();
+      } catch {
+        const img = document.createElement("img");
+        img.src = t.icon; img.alt = "";
+        icon.append(img);
+      }
+      a.append(icon, document.createTextNode(t.name));
       li.append(a);
       return li;
     }));
+    document.getElementById("grid").append(...items);
   </script>
 </body>
 </html>
