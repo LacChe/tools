@@ -22,3 +22,15 @@
 
 .edit-info { margin: 0; color: var(--text-soft); line-height: 1.5; }
 .danger-btn { color: var(--danger); border-color: var(--danger); }
+
+/* Compact form: smaller controls, no spinner arrows on number inputs */
+.compact { gap: 8px; }
+.compact .field { font-size: 11px; gap: 2px; }
+.compact input, .compact select { min-height: 36px; padding: 0 8px; font-size: 14px; }
+.compact button[type="submit"] { min-height: 40px; }
+.compact .field-row { gap: 8px; }
+.compact .cur-field { flex: 0 0 76px; }
+.compact .field-row > .field:last-child { flex: 1.2; }
+input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
