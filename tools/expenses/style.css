@@ -1,0 +1,24 @@
+.bar h1 { flex: 1; text-align: center; }
+.bar .btn { display: inline-flex; align-items: center; text-decoration: none; }
+#openSettings { width: 44px; padding: 0; font-size: 20px; }
+
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.field input, .field select { width: 100%; }
+#addForm { margin-bottom: 28px; }
+#formOk { color: var(--success); }
+
+.day { margin-bottom: 18px; }
+.day-header { margin: 0 0 6px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; min-height: 44px; margin-bottom: 6px; padding: 0 14px;
+  color: var(--text); text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.row:hover { background: var(--surface-hover); }
+.row .amt { white-space: nowrap; }
+.row .cur { margin-left: 6px; color: var(--muted); }
+.empty { color: var(--muted); }
+
+.edit-info { margin: 0; color: var(--text-soft); line-height: 1.5; }
+.danger-btn { color: var(--danger); border-color: var(--danger); }

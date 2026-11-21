@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-app="expenses">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Expenses</title>
+  <link rel="stylesheet" href="../../base.css">
+  <link rel="stylesheet" href="../../theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <p class="status" id="status" role="status">Loading…</p>
+  <main class="page" id="app" hidden>
+    <header class="bar">
+      <a class="btn" href="../../index.html">Home</a>
+      <h1>Expenses</h1>
+      <button type="button" id="openSettings" aria-label="Settings">⚙</button>
+    </header>
+
+    <form class="stack" id="addForm">
+      <label class="field">Date
+        <input type="date" id="fDate" required>
+      </label>
+      <div class="field-row">
+        <label class="field">Type
+          <select id="fCategory" required>
+            <option value="" disabled selected>Type</option>
+          </select>
+        </label>
+        <label class="field">Amount
+          <input type="number" step="any" id="fAmount" required>
+        </label>
+      </div>
+      <label class="field">Currency
+        <select id="fCurrency" required></select>
+      </label>
+      <button type="submit" id="addBtn">Add</button>
+      <p class="error" id="formError" role="alert"></p>
+      <p class="success" id="formOk" role="status"></p>
+    </form>
+
+    <div id="list"></div>
+  </main>
+
+  <div class="overlay" id="editOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="editTitle">Edit entry</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close">×</button>
+      </div>
+      <form class="stack" id="editForm">
+        <p class="edit-info" id="editInfo"></p>
+        <label class="field">Amount
+          <input type="number" step="any" id="eAmount" required>
+        </label>
+        <button type="submit" id="saveBtn">Save</button>
+        <button type="button" class="danger-btn" id="deleteBtn">Delete</button>
+        <p class="error" id="editError" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="settingsOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="settingsTitle">Settings</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close">×</button>
+      </div>
+      <form class="stack" id="settingsForm">
+        <label class="field">Default currency
+          <select id="sCurrency" required></select>
+        </label>
+        <button type="submit" id="settingsSave">Save</button>
+        <p class="error" id="settingsError" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
