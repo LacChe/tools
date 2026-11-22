@@ -1,5 +1,6 @@
 import { sb, requireAuth } from "../../auth.js";
 import { t, getLang, setLang, applyStatic, LANGS } from "./i18n.js";
+import { state } from "./state.js";
 
 applyStatic();
 const session = await requireAuth();
@@ -12,21 +13,26 @@ const fail = (msg) => {
 };
 
 // Shared state: later steps import these from here.
-const [cat, prof] = await Promise.all([
+const [cat, prof, cata] = await Promise.all([
   sb.from("exercise_categories").select("*").order("sort_order"),
   sb.from("hub_profiles").select("display_name").eq("user_id", session.user.id).maybeSingle(),
+  sb.from("exercise_catalog").select("*, creator:hub_profiles!created_by(display_name)"),
 ]);
 if (cat.error) fail(cat.error.message);
+if (cata.error) fail(cata.error.message);
 if (!cat.data.length) { // RLS returns nothing without access to this app
   status.textContent = t("noAccess");
   throw new Error("no access");
 }
-export const userId = session.user.id;
-export const categories = cat.data;
-export const profile = prof.error ? null : prof.data; // tolerate a missing profile row
+state.userId = session.user.id;
+state.categories = cat.data;
+state.profile = prof.error ? null : prof.data; // tolerate a missing profile row
+state.catalog = cata.data;
 
 status.remove();
 $("app").hidden = false;
+
+await import("./library.js"); // registers its listeners; needs state to be filled first
 
 // Tabs: all views live in this page; the current one is kept in the URL hash.
 const VIEWS = ["log", "history", "progress", "library"];
