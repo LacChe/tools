@@ -52,3 +52,42 @@
 input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* View toggle (Records / Reports) */
+.bar-spacer { width: 44px; }
+.view-toggle {
+  display: flex; gap: 4px; margin-bottom: 20px; padding: 4px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+}
+.view-toggle a {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 36px; border-radius: 999px; font-size: 14px; color: var(--muted); text-decoration: none;
+}
+.view-toggle a[aria-current="page"] { background: var(--surface-hover); color: var(--text); }
+
+/* Reports */
+#rangeForm { margin-bottom: 4px; }
+.donut-wrap { position: relative; width: min(100%, 280px); margin: 8px auto 20px; }
+.donut-wrap svg { display: block; width: 100%; height: auto; }
+.donut-track { fill: none; stroke: var(--surface); stroke-width: 16; }
+.donut-slice {
+  fill: none; stroke-width: 16; cursor: pointer;
+  transform: rotate(-90deg); transform-origin: 60px 60px; transition: opacity 0.15s;
+}
+.donut-slice.dim, #typeList .row.dim { opacity: 0.35; }
+.donut-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; padding: 0 22%; text-align: center; pointer-events: none;
+}
+.donut-amt { font-size: 22px; font-weight: 600; }
+.donut-sub { font-size: 12px; color: var(--muted); }
+#typeList .row .amt { display: inline-flex; align-items: baseline; gap: 10px; }
+#typeList .row .pct { font-size: 13px; color: var(--muted); }
+
+.trend-box { margin-top: 24px; }
+.sec-title { margin: 0 0 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.trend { display: flex; align-items: flex-end; gap: 2px; height: 96px; border-bottom: 1px solid var(--border); }
+.tcell { flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; }
+.tbar { width: 100%; display: flex; flex-direction: column-reverse; border-radius: 2px 2px 0 0; overflow: hidden; }
+.tseg { flex: 1 1 0; min-height: 1px; background: var(--cat); }
+.trend-axis { display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--muted); }
