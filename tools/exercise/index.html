@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=1">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -28,8 +28,55 @@
     <section id="logView" data-view-section="log"><p class="empty" data-i18n="comingLog">The log page comes in step 4.</p></section>
     <section id="historyView" data-view-section="history" hidden><p class="empty" data-i18n="comingHistory">The history page comes in step 6.</p></section>
     <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
-    <section id="libraryView" data-view-section="library" hidden><p class="empty" data-i18n="comingLibrary">The library comes in step 3.</p></section>
+    <section id="libraryView" data-view-section="library" hidden>
+      <div class="lib-tools">
+        <input type="search" id="libSearch" class="lib-input" aria-label="Search exercises" data-i18n-aria="search">
+        <div class="lib-row">
+          <select id="libCat" class="lib-input" aria-label="Category" data-i18n-aria="category"></select>
+          <label class="check"><input type="checkbox" id="libArchived"><span data-i18n="showArchived">Show archived</span></label>
+        </div>
+        <button type="button" id="libNew" data-i18n="newExercise">New exercise</button>
+      </div>
+      <div id="libList"></div>
+      <p class="empty" id="libEmpty" hidden data-i18n="noExercises">No exercises found.</p>
+    </section>
   </main>
+
+  <div class="overlay" id="exOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="exTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="exTitle"></h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <form class="stack" id="exForm" novalidate>
+        <p class="edit-info" id="exInfo"></p>
+        <label class="field"><span data-i18n="nameEn">Name (English)</span>
+          <input type="text" id="exNameEn" autocomplete="off">
+        </label>
+        <label class="field"><span data-i18n="nameZh">Name (中文)</span>
+          <input type="text" id="exNameZh" autocomplete="off">
+        </label>
+        <label class="field"><span data-i18n="category">Category</span>
+          <select id="exCategory"></select>
+        </label>
+        <fieldset class="check-group"><legend data-i18n="requiredMetrics">Always logged</legend><div id="exReq"></div></fieldset>
+        <fieldset class="check-group"><legend data-i18n="optionalMetrics">Optional</legend><div id="exOpt"></div></fieldset>
+        <label class="field"><span data-i18n="primaryMetric">Chart metric</span>
+          <select id="exPrimary"></select>
+        </label>
+        <label class="check"><input type="checkbox" id="exUnilateral"><span data-i18n="unilateral">Done one side at a time</span></label>
+        <label class="field"><span data-i18n="parent">Variant of</span>
+          <select id="exParent"></select>
+        </label>
+        <button type="submit" id="exSave" data-i18n="save">Save</button>
+        <button type="button" class="neutral-btn" id="exDuplicate" data-i18n="duplicate">Duplicate</button>
+        <button type="button" class="neutral-btn" id="exArchive" data-i18n="archive">Archive</button>
+        <button type="button" class="danger-btn" id="exDelete" data-i18n="delete">Delete</button>
+        <p class="error" id="exError" role="alert"></p>
+        <button type="button" class="neutral-btn" id="exOpenExisting" data-i18n="openExisting" hidden>Open existing</button>
+      </form>
+    </div>
+  </div>
 
   <div class="overlay" id="settingsOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -45,6 +92,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=1"></script>
+  <script type="module" src="app.js?v=2"></script>
 </body>
 </html>

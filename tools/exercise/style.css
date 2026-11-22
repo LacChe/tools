@@ -10,3 +10,37 @@
 .view-toggle { display: flex; gap: 6px; margin: 0 auto 20px; }
 .view-toggle button { flex: 1 1 0; min-width: 0; padding: 0 6px; font-size: 14px; }
 .view-toggle button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); }
+
+/* Library */
+.lib-tools { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.lib-input {
+  width: 100%; min-height: 40px; padding: 0 10px; font: inherit; font-size: 14px;
+  color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+}
+.lib-row { display: flex; align-items: center; gap: 12px; }
+.lib-row select { flex: 1; min-width: 0; }
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-soft); min-height: 32px; }
+form.stack .check input { min-height: 0; width: 18px; height: 18px; padding: 0; flex: none; }
+.check input { width: 18px; height: 18px; flex: none; }
+
+.ex-row {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  width: 100%; min-height: 56px; margin-bottom: 6px; padding: 8px 14px;
+  color: var(--text); text-align: left; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.ex-row:hover { background: var(--surface-hover); }
+.ex-row.child { width: calc(100% - 20px); margin-left: 20px; }
+.ex-row.archived { opacity: 0.6; }
+.ex-name { font-size: 16px; overflow-wrap: anywhere; }
+.ex-meta { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+
+.check-group { margin: 0; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.check-group legend { padding: 0 6px; font-size: 13px; color: var(--muted); }
+.check-group > div { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.check input:disabled + span { opacity: 0.4; }
+
+.edit-info { margin: 0; color: var(--text-soft); line-height: 1.5; }
+.edit-info:empty { display: none; }
+form.stack .neutral-btn { background: none; color: var(--text); border: 1px solid var(--border); font-weight: 400; }
+form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
