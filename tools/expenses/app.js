@@ -8,18 +8,38 @@ const status = $("status");
 const pad = (n) => String(n).padStart(2, "0");
 const localISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const today = () => localISO(new Date());
-const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return localISO(d); };
 
 const fail = (msg) => {
   status.textContent = "Could not load data: " + msg;
   throw new Error("load failed");
 };
 
+// Paging: newest first, PAGE rows at a time. `before` is the strict date bound for the next fetch.
+const PAGE = 80;
+let before = null;
+let hasMore = true;
+let loading = false;
+const fetchEntries = (bound) => {
+  let q = sb.from("expenses_entries").select("*")
+    .order("entry_date", { ascending: false }).order("id", { ascending: false }).limit(PAGE);
+  if (bound) q = q.lt("entry_date", bound);
+  return q;
+};
+// Keeps only whole days: when a page is full, its last day may be cut off, so drop it and fetch it next time.
+const take = (data) => {
+  if (data.length < PAGE) { hasMore = false; return data; }
+  const lastDate = data[data.length - 1].entry_date;
+  const kept = data.filter((r) => r.entry_date > lastDate);
+  if (!kept.length) { before = lastDate; return data; } // one day filled a whole page (not expected)
+  before = kept[kept.length - 1].entry_date;
+  return kept;
+};
+
 const [cat, cur, set, ent] = await Promise.all([
   sb.from("expenses_categories").select("*").order("sort_order"),
   sb.from("expenses_currencies").select("*").order("sort_order"),
   sb.from("expenses_settings").select("default_currency").maybeSingle(),
-  sb.from("expenses_entries").select("*").gte("entry_date", daysAgo(30)).order("entry_date", { ascending: false }),
+  fetchEntries(null),
 ]);
 for (const r of [cat, cur, set, ent]) if (r.error) fail(r.error.message);
 if (!cat.data.length) {
@@ -31,7 +51,7 @@ const categories = cat.data;
 const currencies = cur.data;
 const catLabel = new Map(categories.map((c) => [c.slug, c.label_en]));
 const catOrder = new Map(categories.map((c) => [c.slug, c.sort_order]));
-let entries = ent.data;
+let entries = take(ent.data);
 let defaultCurrency =
   set.data && currencies.some((c) => c.code === set.data.default_currency)
     ? set.data.default_currency
@@ -89,7 +109,7 @@ const render = () => {
   if (!entries.length) {
     const p = document.createElement("p");
     p.className = "empty";
-    p.textContent = "No entries in the last 30 days.";
+    p.textContent = "No entries yet.";
     list.append(p);
     return;
   }
@@ -171,14 +191,66 @@ const render = () => {
   }
 };
 
-const reload = async () => {
-  const { data, error } = await sb.from("expenses_entries").select("*")
-    .gte("entry_date", daysAgo(30)).order("entry_date", { ascending: false });
-  if (error) { $("formError").textContent = error.message; return; }
-  entries = data;
-  render();
+// Footer under the list: loading / retry / end-of-list message, and the trigger for loading more.
+const listEnd = $("listEnd");
+const updateEnd = () => {
+  listEnd.classList.remove("retry");
+  listEnd.onclick = null;
+  if (!entries.length) listEnd.textContent = "";
+  else if (hasMore) listEnd.textContent = loading ? "Loading…" : "";
+  else listEnd.textContent = "You've reached the end.";
 };
+const io = new IntersectionObserver((hits) => {
+  if (hits.some((h) => h.isIntersecting)) loadMore();
+}, { rootMargin: "400px 0px" });
+// Re-observing makes the observer report again, so a short list keeps loading until it fills the screen.
+const recheck = () => { io.unobserve(listEnd); io.observe(listEnd); };
+
+const loadMore = async () => {
+  if (loading || !hasMore) return;
+  loading = true;
+  updateEnd();
+  const { data, error } = await fetchEntries(before);
+  loading = false;
+  if (error) {
+    listEnd.textContent = "Couldn't load more. Tap to retry.";
+    listEnd.classList.add("retry");
+    listEnd.onclick = loadMore;
+    return;
+  }
+  const seen = new Set(entries.map((e) => e.id));
+  entries = entries.concat(take(data).filter((r) => !seen.has(r.id)));
+  render();
+  updateEnd();
+  recheck();
+};
+
+// Start over from the newest page (fallback when a save returns something unexpected).
+const resetAndLoad = async () => {
+  before = null;
+  hasMore = true;
+  const { data, error } = await fetchEntries(null);
+  if (error) { $("formError").textContent = error.message; return; }
+  entries = take(data);
+  render();
+  updateEnd();
+  recheck();
+};
+
+// Local updates after a save: no refetch, so already-loaded older pages stay put.
+const applyUpsert = (row) => {
+  if (!row || row.id == null) return resetAndLoad();
+  const i = entries.findIndex((e) => e.id === row.id);
+  if (i >= 0) entries[i] = row;
+  else if (!hasMore || before === null || row.entry_date >= before) entries.push(row);
+  // else: older than what is loaded; it shows up when the user scrolls to it.
+  render();
+  updateEnd();
+};
+
 render();
+updateEnd();
+io.observe(listEnd);
 
 // Overlays --------------------------------------------------------------
 const open = (o) => o.classList.add("open");
@@ -204,7 +276,7 @@ $("addForm").addEventListener("submit", async (e) => {
   const currency = $("fCurrency").value;
   const btn = $("addBtn");
   btn.disabled = true;
-  const { error } = await sb.rpc("expenses_add_entry", {
+  const { data, error } = await sb.rpc("expenses_add_entry", {
     p_entry_date: $("fDate").value, p_category: category, p_currency: currency, p_amount: a.value,
   });
   btn.disabled = false;
@@ -213,7 +285,7 @@ $("addForm").addEventListener("submit", async (e) => {
   ok.textContent = `Added ${fmt(a.value)} ${currency} to ${catLabel.get(category)}`;
   clearTimeout(okTimer);
   okTimer = setTimeout(() => { ok.textContent = ""; }, 3000);
-  await reload();
+  await applyUpsert(Array.isArray(data) ? data[0] : data);
 });
 
 // Edit ------------------------------------------------------------------
@@ -243,7 +315,9 @@ $("editForm").addEventListener("submit", async (ev) => {
   $("saveBtn").disabled = false;
   if (error) { err.textContent = error.message; return; }
   closeAll();
-  await reload();
+  editing.amount = a.value;
+  render();
+  updateEnd();
 });
 $("deleteBtn").addEventListener("click", async () => {
   const btn = $("deleteBtn");
@@ -257,7 +331,9 @@ $("deleteBtn").addEventListener("click", async () => {
   const { error } = await sb.from("expenses_entries").delete().eq("id", editing.id);
   if (error) { $("editError").textContent = error.message; return; }
   closeAll();
-  await reload();
+  entries = entries.filter((x) => x.id !== editing.id);
+  render();
+  updateEnd();
 });
 
 // Settings --------------------------------------------------------------
