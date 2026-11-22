@@ -5,49 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Expenses</title>
-  <link rel="stylesheet" href="../../base.css?v=2">
-  <link rel="stylesheet" href="../../theme.css?v=2">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="../../base.css?v=3">
+  <link rel="stylesheet" href="../../theme.css?v=3">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
-  <p class="status" id="status" role="status">Loading…</p>
+  <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
   <main class="page" id="app" hidden>
     <header class="bar">
-      <a class="btn" href="../../index.html">Home</a>
-      <h1>Expenses</h1>
-      <button type="button" id="openSettings" aria-label="Settings">⚙</button>
+      <a class="btn" href="../../index.html" data-i18n="home">Home</a>
+      <h1 data-i18n="title">Expenses</h1>
+      <button type="button" id="openSettings" aria-label="Settings" data-i18n-aria="settings">⚙</button>
     </header>
 
-    <nav class="view-toggle" aria-label="View">
+    <nav class="view-toggle" aria-label="View" data-i18n-aria="view">
       <button type="button" id="tabRecords" data-view="records" aria-pressed="true">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
-        Records
+        <span data-i18n="records">Records</span>
       </button>
       <button type="button" id="tabReports" data-view="reports" aria-pressed="false">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
-        Reports
+        <span data-i18n="reports">Reports</span>
       </button>
     </nav>
 
     <div id="recordsView">
     <form class="stack compact" id="addForm">
-      <label class="field">Date
+      <label class="field"><span data-i18n="date">Date</span>
         <input type="date" id="fDate" required>
       </label>
       <div class="field-row">
-        <label class="field cur-field">Currency
+        <label class="field cur-field"><span data-i18n="currency">Currency</span>
           <select id="fCurrency" required></select>
         </label>
-        <label class="field">Type
+        <label class="field"><span data-i18n="type">Type</span>
           <select id="fCategory" required>
-            <option value="" disabled selected>Type</option>
+            <option value="" disabled selected data-i18n="type">Type</option>
           </select>
         </label>
-        <label class="field">Amount
+        <label class="field"><span data-i18n="amount">Amount</span>
           <input type="number" step="any" id="fAmount" required>
         </label>
       </div>
-      <button type="submit" id="addBtn">Add</button>
+      <button type="submit" id="addBtn" data-i18n="add">Add</button>
       <p class="error" id="formError" role="alert"></p>
       <p class="success" id="formOk" role="status"></p>
     </form>
@@ -59,13 +59,13 @@
     <div id="reportsView" hidden>
     <form class="stack compact" id="rangeForm" onsubmit="return false">
       <div class="field-row">
-        <label class="field">From
+        <label class="field"><span data-i18n="from">From</span>
           <input type="date" id="rFrom" required>
         </label>
-        <label class="field">To
+        <label class="field"><span data-i18n="to">To</span>
           <input type="date" id="rTo" required>
         </label>
-        <label class="field cur-field">Currency
+        <label class="field cur-field"><span data-i18n="currency">Currency</span>
           <select id="rCurrency" required></select>
         </label>
       </div>
@@ -74,7 +74,7 @@
 
     <div id="reportBody" hidden>
       <div class="donut-wrap">
-        <svg id="donut" viewBox="0 0 120 120" role="img" aria-label="Spending by type"></svg>
+        <svg id="donut" viewBox="0 0 120 120" role="img" aria-label="Spending by type" data-i18n-aria="spendingByType"></svg>
         <div class="donut-center">
           <span class="donut-amt" id="donutAmt"></span>
           <span class="donut-sub" id="donutSub"></span>
@@ -89,23 +89,23 @@
         <div class="trend-axis"><span id="trendFrom"></span><span id="trendTo"></span></div>
       </section>
     </div>
-    <p class="empty" id="reportEmpty" hidden>No entries in this range.</p>
+    <p class="empty" id="reportEmpty" hidden data-i18n="noRange">No entries in this range.</p>
     </div>
   </main>
 
   <div class="overlay" id="editOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
       <div class="panel-header">
-        <h2 class="panel-title" id="editTitle">Edit entry</h2>
-        <button type="button" class="panel-close" data-close aria-label="Close">×</button>
+        <h2 class="panel-title" id="editTitle" data-i18n="editEntry">Edit entry</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
       </div>
       <form class="stack" id="editForm">
         <p class="edit-info" id="editInfo"></p>
-        <label class="field">Amount
+        <label class="field"><span data-i18n="amount">Amount</span>
           <input type="number" step="any" id="eAmount" required>
         </label>
-        <button type="submit" id="saveBtn">Save</button>
-        <button type="button" class="danger-btn" id="deleteBtn">Delete</button>
+        <button type="submit" id="saveBtn" data-i18n="save">Save</button>
+        <button type="button" class="danger-btn" id="deleteBtn" data-i18n="delete">Delete</button>
         <p class="error" id="editError" role="alert"></p>
       </form>
     </div>
@@ -114,20 +114,23 @@
   <div class="overlay" id="settingsOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <div class="panel-header">
-        <h2 class="panel-title" id="settingsTitle">Settings</h2>
-        <button type="button" class="panel-close" data-close aria-label="Close">×</button>
+        <h2 class="panel-title" id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
       </div>
       <form class="stack" id="settingsForm">
-        <label class="field">Default currency
+        <label class="field"><span data-i18n="language">Language</span>
+          <select id="sLang"></select>
+        </label>
+        <label class="field"><span data-i18n="defaultCurrency">Default currency</span>
           <select id="sCurrency" required></select>
         </label>
-        <button type="submit" id="settingsSave">Save</button>
+        <button type="submit" id="settingsSave" data-i18n="save">Save</button>
         <p class="error" id="settingsError" role="alert"></p>
       </form>
     </div>
   </div>
 
-  <script type="module" src="app.js?v=2"></script>
-  <script type="module" src="reports.js?v=2"></script>
+  <script type="module" src="app.js?v=3"></script>
+  <script type="module" src="reports.js?v=3"></script>
 </body>
 </html>

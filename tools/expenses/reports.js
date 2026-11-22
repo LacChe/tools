@@ -1,12 +1,13 @@
 import { sb, requireAuth } from "../../auth.js";
 import { pad, localISO, parseISO, monthBack, money, catColor } from "./common.js";
+import { t, catName } from "./i18n.js";
 
 await requireAuth();
 const $ = (id) => document.getElementById(id);
 
 // app.js owns the page status line and un-hides the page; this module only fills the Reports view.
 const fail = (msg) => {
-  $("reportError").textContent = "Could not load data: " + msg;
+  $("reportError").textContent = t("loadFail", { msg });
   throw new Error("load failed");
 };
 
@@ -19,7 +20,8 @@ for (const r of [cat, cur, set]) if (r.error) fail(r.error.message);
 if (!cat.data.length) throw new Error("no access"); // app.js shows the message
 
 const currencies = cur.data;
-const catLabel = new Map(cat.data.map((c) => [c.slug, c.label_en]));
+const catBySlug = new Map(cat.data.map((c) => [c.slug, c]));
+const lab = (slug) => (catBySlug.has(slug) ? catName(catBySlug.get(slug)) : slug);
 const catOrder = new Map(cat.data.map((c) => [c.slug, c.sort_order]));
 const defaultCurrency =
   set.data && currencies.some((c) => c.code === set.data.default_currency)
@@ -68,7 +70,7 @@ const paintSelection = () => {
   const v = selected ? view.nets.get(selected) : undefined;
   if (selected && v !== undefined) {
     $("donutAmt").textContent = money(v, view.currency);
-    $("donutSub").textContent = (catLabel.get(selected) ?? selected) +
+    $("donutSub").textContent = lab(selected) +
       (v > 0 && view.posSum > 0 ? ` · ${pctText((v / view.posSum) * 100)}` : "");
   } else {
     $("donutAmt").textContent = money(view.net, view.currency);
@@ -123,7 +125,7 @@ const drawList = (pos, neg, posSum, currency) => {
     b.dataset.slug = slug;
     b.style.setProperty("--cat", catColor(slug));
     const l = document.createElement("span");
-    l.textContent = catLabel.get(slug) ?? slug;
+    l.textContent = lab(slug);
     const r = document.createElement("span");
     r.className = "amt";
     if (v > 0 && posSum > 0) {
@@ -180,7 +182,7 @@ const drawTrend = (rows, from, to, currency) => {
   for (const b of bars) {
     const cell = document.createElement("div");
     cell.className = "tcell";
-    cell.title = `${unit === "week" ? "Week of " : ""}${b.key}: ${money(b.total, currency)}`;
+    cell.title = `${unit === "week" ? t("weekOf") : ""}${b.key}: ${money(b.total, currency)}`;
     if (max > 0 && b.total > 0) {
       const bar = document.createElement("div");
       bar.className = "tbar";
@@ -196,12 +198,14 @@ const drawTrend = (rows, from, to, currency) => {
     }
     trend.append(cell);
   }
-  $("trendTitle").textContent = `Spending per ${unit}`;
+  $("trendTitle").textContent = t(unit === "day" ? "perDay" : unit === "week" ? "perWeek" : "perMonth");
   $("trendFrom").textContent = keys[0];
   $("trendTo").textContent = keys[keys.length - 1];
 };
 
+let last = null; // last drawn data, kept so a language change can redraw without refetching
 const draw = (rows, from, to, currency) => {
+  last = [rows, from, to, currency];
   const nets = new Map();
   for (const r of rows) nets.set(r.category, (nets.get(r.category) ?? 0) + Number(r.amount));
   const list = [...nets].filter(([, v]) => Math.abs(v) >= 0.005);
@@ -255,6 +259,7 @@ $("rCurrency").addEventListener("change", update);
 
 // Records changed (add / edit / delete): refresh in the background so Reports is already current when opened.
 document.addEventListener("expenses:changed", update);
+document.addEventListener("expenses:lang", () => { if (last) draw(...last); });
 
 limits();
 update();

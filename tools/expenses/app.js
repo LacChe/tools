@@ -1,12 +1,14 @@
 import { sb, requireAuth } from "../../auth.js";
 import { today, fmt, money, catColor } from "./common.js";
+import { t, getLang, setLang, applyStatic, catName, curName, LANGS } from "./i18n.js";
 
+applyStatic();
 await requireAuth();
 const $ = (id) => document.getElementById(id);
 const status = $("status");
 
 const fail = (msg) => {
-  status.textContent = "Could not load data: " + msg;
+  status.textContent = t("loadFail", { msg });
   throw new Error("load failed");
 };
 
@@ -39,13 +41,14 @@ const [cat, cur, set, ent] = await Promise.all([
 ]);
 for (const r of [cat, cur, set, ent]) if (r.error) fail(r.error.message);
 if (!cat.data.length) {
-  status.textContent = "No access to this app.";
+  status.textContent = t("noAccess");
   throw new Error("no access");
 }
 
 const categories = cat.data;
 const currencies = cur.data;
-const catLabel = new Map(categories.map((c) => [c.slug, c.label_en]));
+const catBySlug = new Map(categories.map((c) => [c.slug, c]));
+const lab = (slug) => (catBySlug.has(slug) ? catName(catBySlug.get(slug)) : slug);
 const catOrder = new Map(categories.map((c) => [c.slug, c.sort_order]));
 let entries = take(ent.data);
 let defaultCurrency =
@@ -78,28 +81,44 @@ const fill = (select, items, value, label) => {
     select.append(o);
   }
 };
-fill($("fCategory"), categories, "slug", (c) => c.label_en);
-fill($("fCurrency"), currencies, "code", (c) => c.code);
-fill($("sCurrency"), currencies, "code", (c) => `${c.code} – ${c.label_en}`);
+// (Re)builds the option lists in the current language, keeping what is selected.
+const fillSelects = () => {
+  const keep = ["fCategory", "fCurrency", "sCurrency"].map((id) => $(id).value);
+  const placeholder = $("fCategory").querySelector("option[disabled]");
+  $("fCategory").replaceChildren(placeholder);
+  $("fCurrency").replaceChildren();
+  $("sCurrency").replaceChildren();
+  fill($("fCategory"), categories, "slug", catName);
+  fill($("fCurrency"), currencies, "code", (c) => c.code);
+  fill($("sCurrency"), currencies, "code", (c) => `${c.code} – ${curName(c)}`);
+  ["fCategory", "fCurrency", "sCurrency"].forEach((id, i) => { $(id).value = keep[i]; });
+};
+fillSelects();
+for (const [code, name] of Object.entries(LANGS)) {
+  const o = document.createElement("option");
+  o.value = code;
+  o.textContent = name;
+  $("sLang").append(o);
+}
+$("sLang").value = getLang();
 $("fDate").value = today();
 $("fCurrency").value = defaultCurrency;
 
 const parseAmount = (raw) => {
   const v = Number(raw);
-  if (raw.trim() === "" || !Number.isFinite(v)) return { error: "Enter a valid amount." };
-  if (Math.abs(v) >= 1e12) return { error: "Amount is too large." };
+  if (raw.trim() === "" || !Number.isFinite(v)) return { error: t("badAmount") };
+  if (Math.abs(v) >= 1e12) return { error: t("bigAmount") };
   return { value: Math.round(v * 100) / 100 };
 };
 
 // List ------------------------------------------------------------------
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const render = () => {
   const list = $("list");
   list.replaceChildren();
   if (!entries.length) {
     const p = document.createElement("p");
     p.className = "empty";
-    p.textContent = "No entries yet.";
+    p.textContent = t("noEntries");
     list.append(p);
     return;
   }
@@ -127,7 +146,7 @@ const render = () => {
     h.className = "day-header";
     const label = document.createElement("span");
     label.className = "day-label";
-    label.textContent = `${date} · ${WEEKDAYS[new Date(y, m - 1, d).getDay()]}`;
+    label.textContent = `${date} · ${t("weekdays")[new Date(y, m - 1, d).getDay()]}`;
     const sums = document.createElement("span");
     sums.className = "day-sums";
     for (const [currency, perCat] of byCur) {
@@ -140,13 +159,13 @@ const render = () => {
         const bar = document.createElement("span");
         bar.className = "day-bar";
         bar.setAttribute("role", "img");
-        bar.setAttribute("aria-label", segs.map(([c, v]) => `${catLabel.get(c) ?? c} ${money(v, currency)}`).join(", "));
+        bar.setAttribute("aria-label", segs.map(([c, v]) => `${lab(c)} ${money(v, currency)}`).join(", "));
         for (const [c, v] of segs) {
           const seg = document.createElement("span");
           seg.className = v < 0 ? "day-seg neg" : "day-seg";
           seg.style.flexGrow = String((Math.abs(v) / absSum) * 100);
           seg.style.setProperty("--cat", catColor(c));
-          seg.title = `${catLabel.get(c) ?? c}: ${money(v, currency)}`;
+          seg.title = `${lab(c)}: ${money(v, currency)}`;
           bar.append(seg);
         }
         sum.append(bar);
@@ -165,7 +184,7 @@ const render = () => {
       b.className = "row";
       b.style.setProperty("--cat", catColor(e.category));
       const l = document.createElement("span");
-      l.textContent = catLabel.get(e.category) ?? e.category;
+      l.textContent = lab(e.category);
       const r = document.createElement("span");
       r.className = "amt";
       r.textContent = fmt(e.amount);
@@ -187,8 +206,8 @@ const updateEnd = () => {
   listEnd.classList.remove("retry");
   listEnd.onclick = null;
   if (!entries.length) listEnd.textContent = "";
-  else if (hasMore) listEnd.textContent = loading ? "Loading…" : "";
-  else listEnd.textContent = "You've reached the end.";
+  else if (hasMore) listEnd.textContent = loading ? t("loading") : "";
+  else listEnd.textContent = t("end");
 };
 const io = new IntersectionObserver((hits) => {
   if (hits.some((h) => h.isIntersecting)) loadMore();
@@ -203,7 +222,7 @@ const loadMore = async () => {
   const { data, error } = await fetchEntries(before);
   loading = false;
   if (error) {
-    listEnd.textContent = "Couldn't load more. Tap to retry.";
+    listEnd.textContent = t("moreFail");
     listEnd.classList.add("retry");
     listEnd.onclick = loadMore;
     return;
@@ -260,7 +279,7 @@ $("addForm").addEventListener("submit", async (e) => {
   err.textContent = "";
   ok.textContent = "";
   const category = $("fCategory").value;
-  if (!category) { err.textContent = "Choose a type."; return; }
+  if (!category) { err.textContent = t("chooseType"); return; }
   const a = parseAmount($("fAmount").value);
   if (a.error) { err.textContent = a.error; return; }
   const currency = $("fCurrency").value;
@@ -272,7 +291,7 @@ $("addForm").addEventListener("submit", async (e) => {
   btn.disabled = false;
   if (error) { err.textContent = error.message; return; }
   $("fAmount").value = "";
-  ok.textContent = `Added ${fmt(a.value)} ${currency} to ${catLabel.get(category)}`;
+  ok.textContent = t("added", { amt: fmt(a.value), cur: currency, cat: lab(category) });
   clearTimeout(okTimer);
   okTimer = setTimeout(() => { ok.textContent = ""; }, 3000);
   await applyUpsert(Array.isArray(data) ? data[0] : data);
@@ -284,14 +303,14 @@ let editing = null;
 let delTimer;
 const resetDelete = () => {
   clearTimeout(delTimer);
-  $("deleteBtn").textContent = "Delete";
+  $("deleteBtn").textContent = t("delete");
   $("deleteBtn").dataset.armed = "";
 };
 const openEdit = (e) => {
   editing = e;
   resetDelete();
   $("editError").textContent = "";
-  $("editInfo").textContent = `${e.entry_date} · ${catLabel.get(e.category) ?? e.category} · ${e.currency}`;
+  $("editInfo").textContent = `${e.entry_date} · ${lab(e.category)} · ${e.currency}`;
   $("eAmount").value = fmt(e.amount);
   open($("editOverlay"));
 };
@@ -315,7 +334,7 @@ $("deleteBtn").addEventListener("click", async () => {
   const btn = $("deleteBtn");
   if (!btn.dataset.armed) {
     btn.dataset.armed = "1";
-    btn.textContent = "Tap again to delete";
+    btn.textContent = t("deleteArm");
     delTimer = setTimeout(resetDelete, 4000);
     return;
   }
@@ -346,7 +365,18 @@ $("settingsForm").addEventListener("submit", async (ev) => {
   defaultCurrency = next;
   closeAll();
   const ok = $("formOk");
-  ok.textContent = `Default currency set to ${next}`;
+  ok.textContent = t("defaultSet", { cur: next });
   clearTimeout(okTimer);
   okTimer = setTimeout(() => { ok.textContent = ""; }, 3000);
+});
+
+// Language ----------------------------------------------------------------
+$("sLang").addEventListener("change", () => setLang($("sLang").value));
+document.addEventListener("expenses:lang", () => {
+  fillSelects();
+  render();
+  updateEnd();
+  resetDelete();
+  if (editing && $("editOverlay").classList.contains("open")) $("editInfo").textContent = `${editing.entry_date} · ${lab(editing.category)} · ${editing.currency}`;
+  $("formOk").textContent = "";
 });
