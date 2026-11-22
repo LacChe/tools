@@ -1,7 +1,7 @@
 # Conventions
 
 1. **App id.** Every tool has one id, used in `tools.json`, the folder name `tools/<id>/`, the database prefix and the `data-app` attribute. Non-tool pages use `hub` (index) and `login`.
-2. **Database naming.** All tables, functions, policies and constraints are `snake_case` and start with the app id: `<id>_<thing>`. Shared infrastructure starts with `hub_`. Examples: `exercise_items`, `expenses_entries`, `hub_app_access`.
+2. **Database naming.** All tables, functions, policies and constraints are `snake_case` and start with the app id: `<id>_<thing>`. Shared infrastructure starts with `hub_`. Examples: `wachter_items`, `expenses_entries`, `hub_app_access`.
    - Policies: `<table>_<purpose>`. Unique constraints: `<table>_<columns>_key`.
    - Text shown to users has a language suffix: `label_en`, later `label_zh`.
    - Small lookup lists (categories, currencies) are tables with a text key, `label_en` and `sort_order`.
