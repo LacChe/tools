@@ -55,6 +55,25 @@ $("fDate").value = today();
 $("fCurrency").value = defaultCurrency;
 
 const fmt = (n) => String(Number(Number(n).toFixed(2)));
+
+// "¥781", "-$20", "CHF 40": symbol from the browser, so no per-currency data is needed.
+const symbols = new Map();
+const money = (n, code) => {
+  if (!symbols.has(code)) {
+    let s = code;
+    try {
+      s = new Intl.NumberFormat("en", { style: "currency", currency: code, currencyDisplay: "narrowSymbol" })
+        .formatToParts(0).find((p) => p.type === "currency")?.value ?? code;
+    } catch { /* unknown code: show it as-is */ }
+    symbols.set(code, /^[A-Za-z]+$/.test(s) ? s + " " : s);
+  }
+  const v = Number(n);
+  return `${v < 0 ? "-" : ""}${symbols.get(code)}${fmt(Math.abs(v))}`;
+};
+
+// Category color token for a slug (defined in base.css, themeable); unknown slugs fall back to --muted.
+const catColor = (slug) => `var(--cat-${String(slug).replace(/[^a-z0-9_-]/gi, "")}, var(--muted))`;
+
 const parseAmount = (raw) => {
   const v = Number(raw);
   if (raw.trim() === "" || !Number.isFinite(v)) return { error: "Enter a valid amount." };
@@ -84,15 +103,57 @@ const render = () => {
     const [y, m, d] = date.split("-").map(Number);
     const section = document.createElement("section");
     section.className = "day";
+    const rows = days.get(date).sort((a, b) => (catOrder.get(a.category) ?? 0) - (catOrder.get(b.category) ?? 0));
+
+    // Per currency: net amount per category (ratios across currencies would be meaningless).
+    const byCur = new Map();
+    for (const e of rows) {
+      if (!byCur.has(e.currency)) byCur.set(e.currency, new Map());
+      const perCat = byCur.get(e.currency);
+      perCat.set(e.category, (perCat.get(e.category) ?? 0) + Number(e.amount));
+    }
+
     const h = document.createElement("h2");
     h.className = "day-header";
-    h.textContent = `${date} · ${WEEKDAYS[new Date(y, m - 1, d).getDay()]}`;
+    const label = document.createElement("span");
+    label.className = "day-label";
+    label.textContent = `${date} · ${WEEKDAYS[new Date(y, m - 1, d).getDay()]}`;
+    const sums = document.createElement("span");
+    sums.className = "day-sums";
+    for (const [currency, perCat] of byCur) {
+      const net = [...perCat.values()].reduce((a, v) => a + v, 0);
+      const segs = [...perCat].filter(([, v]) => Math.abs(v) >= 0.005);
+      const absSum = segs.reduce((a, [, v]) => a + Math.abs(v), 0);
+      const sum = document.createElement("span");
+      sum.className = "day-sum";
+      if (absSum > 0) {
+        const bar = document.createElement("span");
+        bar.className = "day-bar";
+        bar.setAttribute("role", "img");
+        bar.setAttribute("aria-label", segs.map(([c, v]) => `${catLabel.get(c) ?? c} ${money(v, currency)}`).join(", "));
+        for (const [c, v] of segs) {
+          const seg = document.createElement("span");
+          seg.className = v < 0 ? "day-seg neg" : "day-seg";
+          seg.style.flexGrow = String((Math.abs(v) / absSum) * 100);
+          seg.style.setProperty("--cat", catColor(c));
+          seg.title = `${catLabel.get(c) ?? c}: ${money(v, currency)}`;
+          bar.append(seg);
+        }
+        sum.append(bar);
+      }
+      const amt = document.createElement("span");
+      amt.className = "day-amt";
+      amt.textContent = money(net, currency);
+      sum.append(amt);
+      sums.append(sum);
+    }
+    h.append(label, sums);
     section.append(h);
-    const rows = days.get(date).sort((a, b) => (catOrder.get(a.category) ?? 0) - (catOrder.get(b.category) ?? 0));
     for (const e of rows) {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "row";
+      b.style.setProperty("--cat", catColor(e.category));
       const l = document.createElement("span");
       l.textContent = catLabel.get(e.category) ?? e.category;
       const r = document.createElement("span");

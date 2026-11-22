@@ -8,12 +8,28 @@
 #formOk { color: var(--success); }
 
 .day { margin-bottom: 18px; }
-.day-header { margin: 0 0 6px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.day-header {
+  display: flex; align-items: center; gap: 12px;
+  margin: 0 0 6px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted);
+}
+.day-label { white-space: nowrap; }
+.day-sums { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.day-sum { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.day-bar { flex: 1; display: flex; gap: 2px; height: 10px; min-width: 0; }
+.day-seg { flex: 1 1 0; min-width: 4px; border-radius: 2px; background: var(--cat); }
+/* A type whose net is negative (refund): striped, width is the absolute amount. */
+.day-seg.neg {
+  background: repeating-linear-gradient(135deg, var(--cat) 0 3px, transparent 3px 6px);
+  box-shadow: inset 0 0 0 1px var(--cat);
+}
+.day-amt { margin-left: auto; font-weight: 400; letter-spacing: 0; white-space: nowrap; }
+
 .row {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   width: 100%; min-height: 44px; margin-bottom: 6px; padding: 0 14px;
   color: var(--text); text-align: left;
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  border-right: 4px solid var(--cat, var(--border));
 }
 .row:hover { background: var(--surface-hover); }
 .row .amt { white-space: nowrap; }

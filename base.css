@@ -19,6 +19,21 @@
   --surface-2: #1c212b;
   --text-soft: #d9d3c2;
   --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.5);
+  /* Expense type colors: one token per category slug (--cat-<slug>). Themes redefine these. */
+  --cat-food: #d9896a;
+  --cat-drink: #6f9fc9;
+  --cat-transport: #9bb872;
+  --cat-supplies: #8f9ad6;
+  --cat-clothes: #bb88c6;
+  --cat-gift: #d3b65f;
+  --cat-maintenance: #a89a8a;
+  --cat-entertainment: #5fb8b0;
+  --cat-health: #d9777f;
+  --cat-housing: #7fb07f;
+  --cat-utilities: #c880ae;
+  --cat-education: #e3a05c;
+  --cat-travel: #86c3e3;
+  --cat-other: #9aa0ad;
   --radius: 10px;
   --font: 'Noto Serif SC', 'PingFang SC', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
 }
