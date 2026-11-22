@@ -40,8 +40,8 @@ await requireAuth();
 const status = document.getElementById("status");
 
 const [ex, ln] = await Promise.all([
-  sb.from("exercise_items").select("*").order("id"),
-  sb.from("exercise_links").select("*"),
+  sb.from("wachter_items").select("*").order("id"),
+  sb.from("wachter_links").select("*"),
 ]);
 if (ex.error || ln.error || !ex.data.length) {
   status.textContent = "Could not load data: " + (ex.error?.message || ln.error?.message || "no rows");
