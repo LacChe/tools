@@ -53,17 +53,16 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-/* View toggle (Records / Reports) */
+/* View toggle (Records / Reports): two centered buttons */
 .bar-spacer { width: 44px; }
 .view-toggle {
-  display: flex; gap: 4px; margin-bottom: 20px; padding: 4px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  display: flex; justify-content: center; gap: 8px; margin: 0 auto 20px;
 }
-.view-toggle a {
-  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  min-height: 36px; border-radius: 999px; font-size: 14px; color: var(--muted); text-decoration: none;
+.view-toggle button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-width: 128px; font-size: 14px;
 }
-.view-toggle a[aria-current="page"] { background: var(--surface-hover); color: var(--text); }
+.view-toggle button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); }
 
 /* Reports */
 #rangeForm { margin-bottom: 4px; }

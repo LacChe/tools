@@ -3,10 +3,10 @@ import { pad, localISO, parseISO, monthBack, money, catColor } from "./common.js
 
 await requireAuth();
 const $ = (id) => document.getElementById(id);
-const status = $("status");
 
+// app.js owns the page status line and un-hides the page; this module only fills the Reports view.
 const fail = (msg) => {
-  status.textContent = "Could not load data: " + msg;
+  $("reportError").textContent = "Could not load data: " + msg;
   throw new Error("load failed");
 };
 
@@ -16,10 +16,7 @@ const [cat, cur, set] = await Promise.all([
   sb.from("expenses_settings").select("default_currency").maybeSingle(),
 ]);
 for (const r of [cat, cur, set]) if (r.error) fail(r.error.message);
-if (!cat.data.length) {
-  status.textContent = "No access to this app.";
-  throw new Error("no access");
-}
+if (!cat.data.length) throw new Error("no access"); // app.js shows the message
 
 const currencies = cur.data;
 const catLabel = new Map(cat.data.map((c) => [c.slug, c.label_en]));
@@ -28,9 +25,6 @@ const defaultCurrency =
   set.data && currencies.some((c) => c.code === set.data.default_currency)
     ? set.data.default_currency
     : currencies[0]?.code;
-
-status.remove();
-$("app").hidden = false;
 
 for (const c of currencies) {
   const o = document.createElement("option");
@@ -91,6 +85,9 @@ const drawDonut = (pos, posSum) => {
   track.setAttribute("cx", "60");
   track.setAttribute("cy", "60");
   track.setAttribute("r", String(R));
+  track.setAttribute("fill", "none");
+  track.setAttribute("stroke-width", "16");
+  track.style.stroke = "var(--surface)";
   svg.append(track);
   const gap = pos.length > 1 ? 1.2 : 0;
   let acc = 0;
@@ -101,6 +98,9 @@ const drawDonut = (pos, posSum) => {
     c.setAttribute("cx", "60");
     c.setAttribute("cy", "60");
     c.setAttribute("r", String(R));
+    c.setAttribute("fill", "none");
+    c.setAttribute("stroke-width", "16");
+    c.setAttribute("transform", "rotate(-90 60 60)");
     c.setAttribute("stroke-dasharray", `${Math.max(len - gap, 0.01)} ${C}`);
     c.setAttribute("stroke-dashoffset", String(-acc));
     c.style.stroke = catColor(slug);
@@ -250,6 +250,9 @@ const onRange = (changed) => {
 $("rFrom").addEventListener("change", () => onRange($("rFrom")));
 $("rTo").addEventListener("change", () => onRange($("rTo")));
 $("rCurrency").addEventListener("change", update);
+
+// Records changed (add / edit / delete): refresh in the background so Reports is already current when opened.
+document.addEventListener("expenses:changed", update);
 
 limits();
 update();

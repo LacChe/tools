@@ -56,6 +56,20 @@ let defaultCurrency =
 status.remove();
 $("app").hidden = false;
 
+// Records / Reports switch: both views are in this page, so toggling is instant (no navigation).
+const showView = (view) => {
+  const reports = view === "reports";
+  $("recordsView").hidden = reports;
+  $("reportsView").hidden = !reports;
+  $("tabRecords").setAttribute("aria-pressed", String(!reports));
+  $("tabReports").setAttribute("aria-pressed", String(reports));
+  try { history.replaceState(null, "", reports ? "#reports" : location.pathname + location.search); } catch { /* ignore */ }
+};
+$("tabRecords").addEventListener("click", () => showView("records"));
+$("tabReports").addEventListener("click", () => showView("reports"));
+showView(location.hash === "#reports" ? "reports" : "records");
+const changed = () => document.dispatchEvent(new Event("expenses:changed"));
+
 const fill = (select, items, value, label) => {
   for (const it of items) {
     const o = document.createElement("option");
@@ -262,6 +276,7 @@ $("addForm").addEventListener("submit", async (e) => {
   clearTimeout(okTimer);
   okTimer = setTimeout(() => { ok.textContent = ""; }, 3000);
   await applyUpsert(Array.isArray(data) ? data[0] : data);
+  changed();
 });
 
 // Edit ------------------------------------------------------------------
@@ -294,6 +309,7 @@ $("editForm").addEventListener("submit", async (ev) => {
   editing.amount = a.value;
   render();
   updateEnd();
+  changed();
 });
 $("deleteBtn").addEventListener("click", async () => {
   const btn = $("deleteBtn");
@@ -310,6 +326,7 @@ $("deleteBtn").addEventListener("click", async () => {
   entries = entries.filter((x) => x.id !== editing.id);
   render();
   updateEnd();
+  changed();
 });
 
 // Settings --------------------------------------------------------------

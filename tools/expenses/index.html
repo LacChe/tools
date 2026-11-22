@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Expenses</title>
-  <link rel="stylesheet" href="../../base.css">
-  <link rel="stylesheet" href="../../theme.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../../base.css?v=2">
+  <link rel="stylesheet" href="../../theme.css?v=2">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <p class="status" id="status" role="status">Loading…</p>
@@ -19,16 +19,17 @@
     </header>
 
     <nav class="view-toggle" aria-label="View">
-      <a href="index.html" aria-current="page">
+      <button type="button" id="tabRecords" data-view="records" aria-pressed="true">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
         Records
-      </a>
-      <a href="reports.html">
+      </button>
+      <button type="button" id="tabReports" data-view="reports" aria-pressed="false">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
         Reports
-      </a>
+      </button>
     </nav>
 
+    <div id="recordsView">
     <form class="stack compact" id="addForm">
       <label class="field">Date
         <input type="date" id="fDate" required>
@@ -53,6 +54,43 @@
 
     <div id="list"></div>
     <p class="list-end" id="listEnd" role="status" aria-live="polite"></p>
+    </div>
+
+    <div id="reportsView" hidden>
+    <form class="stack compact" id="rangeForm" onsubmit="return false">
+      <div class="field-row">
+        <label class="field">From
+          <input type="date" id="rFrom" required>
+        </label>
+        <label class="field">To
+          <input type="date" id="rTo" required>
+        </label>
+        <label class="field cur-field">Currency
+          <select id="rCurrency" required></select>
+        </label>
+      </div>
+    </form>
+    <p class="error" id="reportError" role="alert"></p>
+
+    <div id="reportBody" hidden>
+      <div class="donut-wrap">
+        <svg id="donut" viewBox="0 0 120 120" role="img" aria-label="Spending by type"></svg>
+        <div class="donut-center">
+          <span class="donut-amt" id="donutAmt"></span>
+          <span class="donut-sub" id="donutSub"></span>
+        </div>
+      </div>
+
+      <div id="typeList"></div>
+
+      <section class="trend-box" id="trendBox">
+        <h2 class="sec-title" id="trendTitle"></h2>
+        <div class="trend" id="trend"></div>
+        <div class="trend-axis"><span id="trendFrom"></span><span id="trendTo"></span></div>
+      </section>
+    </div>
+    <p class="empty" id="reportEmpty" hidden>No entries in this range.</p>
+    </div>
   </main>
 
   <div class="overlay" id="editOverlay">
@@ -89,6 +127,7 @@
     </div>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=2"></script>
+  <script type="module" src="reports.js?v=2"></script>
 </body>
 </html>
