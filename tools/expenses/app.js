@@ -66,6 +66,7 @@ const showView = (view) => {
   $("reportsView").hidden = !reports;
   $("tabRecords").setAttribute("aria-pressed", String(!reports));
   $("tabReports").setAttribute("aria-pressed", String(reports));
+  if (reports) document.dispatchEvent(new Event("expenses:view")); // Reports can only measure itself once visible
   try { history.replaceState(null, "", reports ? "#reports" : location.pathname + location.search); } catch { /* ignore */ }
 };
 $("tabRecords").addEventListener("click", () => showView("records"));

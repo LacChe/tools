@@ -33,9 +33,6 @@ const STR = {
   },
 };
 
-// Fallback category names for when the database has no label_zh column/value yet.
-const CAT_ZH = { transport: "交通", drink: "饮品", maintenance: "维护", entertainment: "娱乐" };
-
 let lang = "en";
 try { const s = localStorage.getItem(KEY); if (s in LANGS) lang = s; } catch { /* storage unavailable */ }
 
@@ -45,14 +42,9 @@ export const t = (key, vars = {}) => {
   return typeof s === "string" ? s.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "") : s;
 };
 
-// Display names for database rows (label_zh wins if the table has it).
-export const catName = (row) => (lang === "zh" ? row.label_zh || CAT_ZH[row.slug] : null) || row.label_en;
-export const curName = (row) => {
-  if (lang === "zh") {
-    try { return new Intl.DisplayNames(["zh-Hans"], { type: "currency" }).of(row.code) || row.label_en; } catch { /* fall through */ }
-  }
-  return row.label_en;
-};
+// Display names for database rows (lookup tables carry label_en and label_zh).
+export const catName = (row) => (lang === "zh" && row.label_zh) || row.label_en;
+export const curName = catName;
 
 // Fills every [data-i18n] (text), [data-i18n-aria] (aria-label) element, plus <html lang> and the title.
 export const applyStatic = () => {
