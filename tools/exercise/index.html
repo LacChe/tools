@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" data-app="exercise">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Exercise</title>
+  <link rel="stylesheet" href="../../base.css?v=3">
+  <link rel="stylesheet" href="../../theme.css?v=4">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
+  <main class="page" id="app" hidden>
+    <header class="bar">
+      <a class="btn" href="../../index.html" data-i18n="home">Home</a>
+      <h1 data-i18n="title">Exercise</h1>
+      <button type="button" id="openSettings" aria-label="Settings" data-i18n-aria="settings">⚙</button>
+    </header>
+
+    <nav class="view-toggle" aria-label="View" data-i18n-aria="view">
+      <button type="button" data-view="log" aria-pressed="true" data-i18n="log">Log</button>
+      <button type="button" data-view="history" aria-pressed="false" data-i18n="history">History</button>
+      <button type="button" data-view="progress" aria-pressed="false" data-i18n="progress">Progress</button>
+      <button type="button" data-view="library" aria-pressed="false" data-i18n="library">Library</button>
+    </nav>
+
+    <section id="logView" data-view-section="log"><p class="empty" data-i18n="comingLog">The log page comes in step 4.</p></section>
+    <section id="historyView" data-view-section="history" hidden><p class="empty" data-i18n="comingHistory">The history page comes in step 6.</p></section>
+    <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
+    <section id="libraryView" data-view-section="library" hidden><p class="empty" data-i18n="comingLibrary">The library comes in step 3.</p></section>
+  </main>
+
+  <div class="overlay" id="settingsOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <form class="stack" id="settingsForm" onsubmit="return false">
+        <label class="field"><span data-i18n="language">Language</span>
+          <select id="sLang"></select>
+        </label>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="app.js?v=1"></script>
+</body>
+</html>
