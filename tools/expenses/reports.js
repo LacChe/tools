@@ -89,7 +89,9 @@ const drawDonut = (pos, posSum) => {
   track.setAttribute("stroke-width", "16");
   track.style.stroke = "var(--surface)";
   svg.append(track);
-  const gap = pos.length > 1 ? 1.2 : 0;
+  // Gap between slices: exactly 1 screen pixel (viewBox is 120 units wide).
+  const px = 120 / (svg.getBoundingClientRect().width || 120);
+  const gap = pos.length > 1 ? px : 0;
   let acc = 0;
   for (const [slug, v] of pos) {
     const len = (v / posSum) * C;
