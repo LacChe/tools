@@ -1,13 +1,9 @@
 import { sb, requireAuth } from "../../auth.js";
+import { today, fmt, money, catColor } from "./common.js";
 
 await requireAuth();
 const $ = (id) => document.getElementById(id);
 const status = $("status");
-
-// Local-date helpers (never toISOString: it returns the UTC date).
-const pad = (n) => String(n).padStart(2, "0");
-const localISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-const today = () => localISO(new Date());
 
 const fail = (msg) => {
   status.textContent = "Could not load data: " + msg;
@@ -73,26 +69,6 @@ fill($("fCurrency"), currencies, "code", (c) => c.code);
 fill($("sCurrency"), currencies, "code", (c) => `${c.code} – ${c.label_en}`);
 $("fDate").value = today();
 $("fCurrency").value = defaultCurrency;
-
-const fmt = (n) => String(Number(Number(n).toFixed(2)));
-
-// "¥781", "-$20", "CHF 40": symbol from the browser, so no per-currency data is needed.
-const symbols = new Map();
-const money = (n, code) => {
-  if (!symbols.has(code)) {
-    let s = code;
-    try {
-      s = new Intl.NumberFormat("en", { style: "currency", currency: code, currencyDisplay: "narrowSymbol" })
-        .formatToParts(0).find((p) => p.type === "currency")?.value ?? code;
-    } catch { /* unknown code: show it as-is */ }
-    symbols.set(code, /^[A-Za-z]+$/.test(s) ? s + " " : s);
-  }
-  const v = Number(n);
-  return `${v < 0 ? "-" : ""}${symbols.get(code)}${fmt(Math.abs(v))}`;
-};
-
-// Category color token for a slug (defined in base.css, themeable); unknown slugs fall back to --muted.
-const catColor = (slug) => `var(--cat-${String(slug).replace(/[^a-z0-9_-]/gi, "")}, var(--muted))`;
 
 const parseAmount = (raw) => {
   const v = Number(raw);
