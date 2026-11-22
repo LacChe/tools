@@ -1,5 +1,4 @@
 [
   { "id": "wachter", "name": "Wachter", "icon": "tools/wachter/icon.svg", "path": "tools/wachter/" },
-  { "id": "expenses", "name": "Expenses", "icon": "tools/expenses/icon.svg", "path": "tools/expenses/" },
-  { "id": "exercise", "name": "Exercise", "icon": "tools/exercise/icon.svg", "path": "tools/exercise/" }
+  { "id": "expenses", "name": "Expenses", "icon": "tools/expenses/icon.svg", "path": "tools/expenses/" }
 ]
