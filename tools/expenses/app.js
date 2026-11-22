@@ -315,6 +315,8 @@ const openEdit = (e) => {
   $("eAmount").value = fmt(e.amount);
   open($("editOverlay"));
 };
+// Reports asks to edit one of its entries; reuse the loaded record when there is one so both views stay in sync.
+document.addEventListener("expenses:edit", (ev) => openEdit(entries.find((x) => x.id === ev.detail.id) ?? ev.detail));
 $("editForm").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const err = $("editError");

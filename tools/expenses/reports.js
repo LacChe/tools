@@ -44,7 +44,7 @@ $("rFrom").value = localISO(monthBack(now));
 const fetchRange = async (from, to, currency) => {
   const out = [];
   for (let i = 0; ; i += 1000) {
-    const { data, error } = await sb.from("expenses_entries").select("entry_date,category,amount")
+    const { data, error } = await sb.from("expenses_entries").select("id,entry_date,category,amount")
       .gte("entry_date", from).lte("entry_date", to).eq("currency", currency)
       .order("entry_date").order("id").range(i, i + 999);
     if (error) throw error;
@@ -64,9 +64,16 @@ const pctText = (p) => (p >= 10 ? `${Math.round(p)}%` : `${Math.round(p * 10) / 
 
 const paintSelection = () => {
   if (!view) return;
-  for (const el of document.querySelectorAll("#donut .donut-slice, #typeList .row")) {
+  for (const el of document.querySelectorAll("#donut .donut-slice")) {
     el.classList.toggle("dim", Boolean(selected) && el.dataset.slug !== selected);
   }
+  // List: only the selected type stays, with that type's individual entries under it.
+  $("typeList").querySelector(".detail")?.remove();
+  for (const el of $("typeList").querySelectorAll(":scope > .row")) {
+    el.hidden = Boolean(selected) && el.dataset.slug !== selected;
+  }
+  const selRow = selected && [...$("typeList").children].find((el) => el.dataset.slug === selected);
+  if (selRow) selRow.after(drawDetail(selected));
   const v = selected ? view.nets.get(selected) : undefined;
   if (selected && v !== undefined) {
     $("donutAmt").textContent = money(v, view.currency);
@@ -76,6 +83,30 @@ const paintSelection = () => {
     $("donutAmt").textContent = money(view.net, view.currency);
     $("donutSub").textContent = "";
   }
+};
+const drawDetail = (slug) => {
+  const box = document.createElement("div");
+  box.className = "detail";
+  const mine = view.rows.filter((r) => r.category === slug)
+    .sort((a, b) => b.entry_date.localeCompare(a.entry_date) || String(b.id).localeCompare(String(a.id)));
+  for (const r of mine) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "row detail-row";
+    b.style.setProperty("--cat", catColor(slug));
+    const d = document.createElement("span");
+    d.textContent = r.entry_date;
+    const a = document.createElement("span");
+    a.className = "amt";
+    a.textContent = money(r.amount, view.currency);
+    b.append(d, a);
+    // app.js owns the edit dialog; it listens for this event.
+    b.addEventListener("click", () => document.dispatchEvent(new CustomEvent("expenses:edit", {
+      detail: { id: r.id, entry_date: r.entry_date, category: r.category, amount: r.amount, currency: view.currency },
+    })));
+    box.append(b);
+  }
+  return box;
 };
 const select = (slug) => { selected = selected === slug ? null : slug; paintSelection(); };
 
@@ -211,14 +242,15 @@ const draw = (rows, from, to, currency) => {
   const list = [...nets].filter(([, v]) => Math.abs(v) >= 0.005);
   $("reportEmpty").hidden = list.length > 0;
   $("reportBody").hidden = list.length === 0;
-  selected = null;
+  // Keep the selection across redraws (edit, delete, language) while that type is still in the range.
+  if (!list.some(([slug]) => slug === selected)) selected = null;
   if (!list.length) { view = null; return; }
   // Slices are the positive nets; a type with a negative net (refunds) is listed but has no slice.
   const pos = list.filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
   const neg = list.filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]);
   const posSum = pos.reduce((a, [, v]) => a + v, 0);
   const net = list.reduce((a, [, v]) => a + v, 0);
-  view = { nets, posSum, net, currency };
+  view = { nets, posSum, net, currency, rows };
   drawDonut(pos, posSum);
   drawList(pos, neg, posSum, currency);
   drawTrend(rows, from, to, currency);
