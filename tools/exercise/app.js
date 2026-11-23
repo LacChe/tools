@@ -39,6 +39,7 @@ await import("./library.js"); // these register their listeners; they need state
 await import("./routines.js");
 await import("./log.js");
 await import("./history.js");
+await import("./progress.js");
 
 // Tabs: all views live in this page; the current one is kept in the URL hash.
 const VIEWS = ["log", "history", "progress", "library"];

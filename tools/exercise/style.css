@@ -102,3 +102,17 @@ form.stack .icon-btn, .icon-btn { flex: none; width: 36px; min-height: 40px; pad
 .draft-row { display: flex; gap: 6px; margin-bottom: 4px; }
 .draft-row .log-set { flex: 1; min-width: 0; margin-bottom: 0; border-style: dashed; color: var(--text-soft); }
 .tick-btn { flex: none; width: 44px; padding: 0; font-size: 18px; color: var(--accent); background: none; border: 1px solid var(--accent); }
+
+/* Progress */
+.pr-box { margin-bottom: 20px; }
+.pr-summary { margin: 0 0 8px; font-size: 14px; color: var(--text-soft); line-height: 1.5; }
+.pr-chart { display: block; width: 100%; height: auto; }
+.pr-grid { stroke: var(--border); stroke-width: 1; }
+.pr-label { fill: var(--muted); font-size: 10px; }
+.pr-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.pr-hit { fill: none; pointer-events: all; }
+.pr-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+.pr-dot.active { fill: var(--accent); }
+.pr-chart g { cursor: pointer; outline: none; }
+.pr-chart g:focus-visible .pr-dot { stroke-width: 3; }
+.pr-readout { min-height: 1.4em; margin: 4px 0 0; text-align: center; font-size: 13px; color: var(--text); }
