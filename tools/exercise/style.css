@@ -59,7 +59,7 @@ form.stack .danger-btn { background: none; color: var(--danger); border: 1px sol
 .log-group { margin-bottom: 14px; }
 .log-head { display: flex; align-items: center; gap: 8px; }
 .log-name { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
-.log-head button { flex: none; min-height: 36px; padding: 0 12px; font-size: 13px; }
+.log-head button { flex: none; min-height: 44px; padding: 0 12px; font-size: 13px; }
 .log-last { margin: 0 0 4px; font-size: 12px; color: var(--muted); min-height: 1.2em; }
 .log-set {
   display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 4px; padding: 0 14px;
@@ -90,11 +90,11 @@ form.stack .danger-btn { background: none; color: var(--danger); border: 1px sol
 
 /* Routines */
 .rt-items { display: flex; flex-direction: column; gap: 6px; }
-.rt-item { display: flex; align-items: center; gap: 6px; }
-.rt-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.rt-item { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.rt-name { flex: 1 1 120px; min-width: 0; overflow-wrap: anywhere; }
 .rt-name.missing { color: var(--danger); }
-.rt-sets { width: 52px; min-height: 40px; padding: 0 6px; text-align: center; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
-form.stack .icon-btn, .icon-btn { flex: none; width: 36px; min-height: 40px; padding: 0; font-size: 16px; background: none; color: var(--text); border: 1px solid var(--border); font-weight: 400; }
+.rt-sets { width: 52px; min-height: 44px; padding: 0 6px; text-align: center; font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+form.stack .icon-btn, .icon-btn { flex: none; width: 40px; min-height: 44px; padding: 0; font-size: 16px; background: none; color: var(--text); border: 1px solid var(--border); font-weight: 400; }
 .icon-btn:disabled { opacity: 0.35; }
 .sec-title { margin: 12px 0 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 .log-actions { display: flex; gap: 8px; margin-top: 8px; }
@@ -116,3 +116,6 @@ form.stack .icon-btn, .icon-btn { flex: none; width: 36px; min-height: 40px; pad
 .pr-chart g { cursor: pointer; outline: none; }
 .pr-chart g:focus-visible .pr-dot { stroke-width: 3; }
 .pr-readout { min-height: 1.4em; margin: 4px 0 0; text-align: center; font-size: 13px; color: var(--text); }
+
+/* Page-level status line (loading / load error) */
+#status .neutral-btn { width: auto; display: inline-block; padding: 0 14px; }

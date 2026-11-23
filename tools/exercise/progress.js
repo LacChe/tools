@@ -40,6 +40,7 @@ const load = async () => {
   if (!exercise) { results = null; return render(); }
   const seq = ++loadSeq;
   $("prError").textContent = "";
+  $("prRetry").hidden = true;
   $("prBody").replaceChildren(Object.assign(document.createElement("p"), { className: "empty", textContent: t("loading") }));
   const ids = selectedIds();
   const from = $("prFrom").value || addDays(today(), -90);
@@ -50,6 +51,7 @@ const load = async () => {
     results = null;
     $("prBody").replaceChildren();
     $("prError").textContent = t("prFail", { msg: error.message });
+    $("prRetry").hidden = false;
     return;
   }
   // Group exercises by primary metric; within a group combine per day.
@@ -186,6 +188,7 @@ $("prEx").addEventListener("click", async () => {
   const ex = await pickExercise();
   if (ex) { exercise = ex; load(); }
 });
+$("prRetry").addEventListener("click", load);
 for (const id of ["prVariants", "prFrom", "prTo"]) $(id).addEventListener("change", load);
 for (const b of document.querySelectorAll("[data-range]")) {
   b.addEventListener("click", () => {
@@ -204,6 +207,7 @@ render();
 document.addEventListener("exercise:changed", () => { stale = true; if (!$("progressView").hidden) load(); });
 document.addEventListener("exercise:view", (ev) => { if (ev.detail?.view === "progress" && stale) load(); });
 document.addEventListener("exercise:lang", () => { renderPicker(); render(); });
+document.addEventListener("exercise:units", render);
 document.addEventListener("exercise:catalog", () => {
   if (exercise) exercise = catalogById().get(exercise.id) ?? exercise;
   renderPicker();

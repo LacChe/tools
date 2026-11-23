@@ -97,6 +97,7 @@ const load = async (date) => {
   $("logWeekday").textContent = new Intl.DateTimeFormat(getLang() === "zh" ? "zh-CN" : "en", { weekday: "long" }).format(parseISO(date));
   setHash(date);
   showError("");
+  $("logRetry").hidden = true;
   const ses = await sb.from("exercise_sessions").select("*").eq("entry_date", date).maybeSingle();
   if (seq !== loadSeq) return;
   if (ses.error) return failLoad(ses.error.message);
@@ -117,6 +118,7 @@ const failLoad = (msg) => {
   cur.sets = [];
   render();
   showError(t("loadDayFail", { msg }));
+  $("logRetry").hidden = false;
 };
 
 // Rendering ------------------------------------------------------------------------------------
@@ -523,6 +525,7 @@ $("logSaveRt").addEventListener("click", () => {
 });
 
 // Date bar and wiring --------------------------------------------------------------------------
+$("logRetry").addEventListener("click", () => load(cur.date));
 $("logPrev").addEventListener("click", () => load(shiftDate(cur.date, -1)));
 $("logNext").addEventListener("click", () => load(shiftDate(cur.date, 1)));
 $("logDate").addEventListener("change", () => { if ($("logDate").value) load($("logDate").value); });
@@ -548,5 +551,6 @@ document.addEventListener("exercise:lang", () => {
 });
 document.addEventListener("exercise:catalog", () => { render(); fillLastTimes(loadSeq); buildDrafts(); });
 document.addEventListener("exercise:routines", () => { buildDrafts(); });
+document.addEventListener("exercise:units", () => { render(); });
 
 load(hashDate() ?? today());
