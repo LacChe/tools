@@ -32,14 +32,16 @@ state.catalog = cata.data;
 status.remove();
 $("app").hidden = false;
 
-await import("./library.js"); // registers its listeners; needs state to be filled first
+await import("./library.js"); // these register their listeners; they need state to be filled first
+await import("./log.js");
 
 // Tabs: all views live in this page; the current one is kept in the URL hash.
 const VIEWS = ["log", "history", "progress", "library"];
 const showView = (view) => {
   for (const b of document.querySelectorAll(".view-toggle button")) b.setAttribute("aria-pressed", String(b.dataset.view === view));
   for (const s of document.querySelectorAll("[data-view-section]")) s.hidden = s.dataset.viewSection !== view;
-  try { history.replaceState(null, "", `#${view}`); } catch { /* ignore */ }
+  const same = location.hash.slice(1).split("?")[0] === view; // keep "#log?date=..." when already on that view
+  try { history.replaceState(null, "", same ? location.hash : `#${view}`); } catch { /* ignore */ }
   document.dispatchEvent(new CustomEvent("exercise:view", { detail: { view } }));
 };
 const viewFromHash = () => {
