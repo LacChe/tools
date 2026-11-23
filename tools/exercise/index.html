@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -47,7 +47,11 @@
       <p class="empty" id="logEmpty" hidden data-i18n="noSets">Nothing logged this day.</p>
       <button type="button" id="logAdd" class="add-btn" data-i18n="logAddExercise">Add exercise</button>
     </section>
-    <section id="historyView" data-view-section="history" hidden><p class="empty" data-i18n="comingHistory">The history page comes in step 6.</p></section>
+    <section id="historyView" data-view-section="history" hidden>
+      <div id="histList"></div>
+      <p class="empty" id="histEmpty" hidden data-i18n="noHistory">No workouts logged yet.</p>
+      <p class="list-end" id="histEnd" role="status" aria-live="polite"></p>
+    </section>
     <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
     <section id="libraryView" data-view-section="library" hidden>
       <div class="lib-tools">
@@ -149,6 +153,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=3"></script>
+  <script type="module" src="app.js?v=4"></script>
 </body>
 </html>

@@ -12,7 +12,10 @@ const $ = (id) => document.getElementById(id);
 const METRICS = ["reps", "weight", "duration", "distance"];
 const metricName = (m) => t("m" + m[0].toUpperCase() + m.slice(1));
 const exName = (e) => (e ? nameOf(e) || t("unnamed") : t("missingExercise"));
-const changed = () => document.dispatchEvent(new Event("exercise:changed"));
+// History updates its list from this payload instead of refetching.
+const changed = () => document.dispatchEvent(new CustomEvent("exercise:changed", {
+  detail: { date: cur.date, sets: cur.sets.slice(), session: cur.session },
+}));
 const open = (id) => $(id).classList.add("open");
 const close = (id) => $(id).classList.remove("open");
 
