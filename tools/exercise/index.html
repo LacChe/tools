@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -57,7 +57,26 @@
       <p class="empty" id="histEmpty" hidden data-i18n="noHistory">No workouts logged yet.</p>
       <p class="list-end" id="histEnd" role="status" aria-live="polite"></p>
     </section>
-    <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
+    <section id="progressView" data-view-section="progress" hidden>
+      <div class="lib-tools">
+        <button type="button" class="neutral-btn" id="prEx"></button>
+        <label class="check" id="prVarWrap" hidden><input type="checkbox" id="prVariants"><span data-i18n="includeVariants">Include variants</span></label>
+        <div class="lib-row">
+          <label class="field"><span data-i18n="from">From</span><input type="date" id="prFrom" class="lib-input"></label>
+          <label class="field"><span data-i18n="to">To</span><input type="date" id="prTo" class="lib-input"></label>
+        </div>
+        <div class="log-actions">
+          <button type="button" class="neutral-btn" data-range="30" data-i18n="range30">30 days</button>
+          <button type="button" class="neutral-btn" data-range="90" data-i18n="range90">90 days</button>
+          <button type="button" class="neutral-btn" data-range="365" data-i18n="range365">1 year</button>
+          <button type="button" class="neutral-btn" data-range="0" data-i18n="rangeAll">All</button>
+        </div>
+      </div>
+      <p class="error" id="prError" role="alert"></p>
+      <p class="empty" id="prHint" data-i18n="prHint">Pick an exercise to see its trend.</p>
+      <div id="prBody"></div>
+      <p class="empty" id="prEmpty" hidden data-i18n="prNoData">No sets for this exercise in this range.</p>
+    </section>
     <section id="libraryView" data-view-section="library" hidden>
       <nav class="view-toggle" aria-label="Library" data-i18n-aria="library">
         <button type="button" id="libTabEx" aria-pressed="true" data-i18n="tabExercises">Exercises</button>
@@ -216,6 +235,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=5"></script>
+  <script type="module" src="app.js?v=6"></script>
 </body>
 </html>

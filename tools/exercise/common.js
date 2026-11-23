@@ -4,6 +4,7 @@
 export const pad = (n) => String(n).padStart(2, "0");
 export const localISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 export const today = () => localISO(new Date());
+export const addDays = (iso, n) => { const d = parseISO(iso); d.setDate(d.getDate() + n); return localISO(d); };
 export const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 
 // Units. Data is stored in kg, meters and seconds; these helpers convert for display and input.
