@@ -80,7 +80,7 @@ const render = () => {
   const byId = catalogById();
   const fmt = new Intl.DateTimeFormat(getLang() === "zh" ? "zh-CN" : "en", { weekday: "short", year: "numeric", month: "short", day: "numeric" });
   const frag = document.createDocumentFragment();
-  for (const s of sessions) {
+  for (const s of sessions.filter((x) => x.sets.length)) { // a routine started but not yet ticked has no sets
     const sets = s.sets.slice().sort((a, b) => a.position - b.position);
     const names = [];
     for (const x of sets) {
@@ -111,9 +111,10 @@ const render = () => {
 const updateEnd = () => {
   const end = $("histEnd");
   end.classList.toggle("retry", failed);
-  $("histEmpty").hidden = !(!hasMore && !failed && !sessions.length);
-  if (failed) end.textContent = sessions.length ? t("moreFail") : t("historyFail", { msg: failMsg });
-  else end.textContent = !hasMore && sessions.length ? t("end") : "";
+  const shown = sessions.filter((x) => x.sets.length).length;
+  $("histEmpty").hidden = !(!hasMore && !failed && !shown);
+  if (failed) end.textContent = shown ? t("moreFail") : t("historyFail", { msg: failMsg });
+  else end.textContent = !hasMore && shown ? t("end") : "";
 };
 $("histEnd").addEventListener("click", () => { if (failed) loadMore(); });
 

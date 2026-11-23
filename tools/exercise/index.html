@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -45,7 +45,12 @@
       <p class="error" id="logError" role="alert"></p>
       <div id="logList"></div>
       <p class="empty" id="logEmpty" hidden data-i18n="noSets">Nothing logged this day.</p>
+      <div id="logDrafts" hidden></div>
       <button type="button" id="logAdd" class="add-btn" data-i18n="logAddExercise">Add exercise</button>
+      <div class="log-actions">
+        <button type="button" class="neutral-btn" id="logStart" data-i18n="startRoutine">Start routine</button>
+        <button type="button" class="neutral-btn" id="logSaveRt" data-i18n="saveAsRoutine" hidden>Save as routine</button>
+      </div>
     </section>
     <section id="historyView" data-view-section="history" hidden>
       <div id="histList"></div>
@@ -54,6 +59,11 @@
     </section>
     <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
     <section id="libraryView" data-view-section="library" hidden>
+      <nav class="view-toggle" aria-label="Library" data-i18n-aria="library">
+        <button type="button" id="libTabEx" aria-pressed="true" data-i18n="tabExercises">Exercises</button>
+        <button type="button" id="libTabRt" aria-pressed="false" data-i18n="tabRoutines">Routines</button>
+      </nav>
+      <div id="libExBox">
       <div class="lib-tools">
         <input type="search" id="libSearch" class="lib-input" aria-label="Search exercises" data-i18n-aria="search">
         <div class="lib-row">
@@ -64,8 +74,61 @@
       </div>
       <div id="libList"></div>
       <p class="empty" id="libEmpty" hidden data-i18n="noExercises">No exercises found.</p>
+      </div>
+      <div id="libRtBox" hidden>
+        <div class="lib-tools">
+          <input type="search" id="rtSearch" class="lib-input" aria-label="Search routines" data-i18n-aria="searchRoutines">
+          <label class="check"><input type="checkbox" id="rtArchived"><span data-i18n="showArchived">Show archived</span></label>
+          <button type="button" id="rtNew" data-i18n="newRoutine">New routine</button>
+        </div>
+        <div id="rtList"></div>
+        <p class="empty" id="rtEmpty" hidden data-i18n="noRoutines">No routines found.</p>
+      </div>
     </section>
   </main>
+
+  <div class="overlay" id="rtOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rtTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="rtTitle"></h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <form class="stack" id="rtForm" novalidate>
+        <p class="edit-info" id="rtInfo"></p>
+        <label class="field"><span data-i18n="nameEn">Name (English)</span>
+          <input type="text" id="rtNameEn" autocomplete="off">
+        </label>
+        <label class="field"><span data-i18n="nameZh">Name (中文)</span>
+          <input type="text" id="rtNameZh" autocomplete="off">
+        </label>
+        <label class="field"><span data-i18n="notes">Notes</span>
+          <input type="text" id="rtNotes" autocomplete="off">
+        </label>
+        <fieldset class="check-group"><legend data-i18n="routineItems">Exercises</legend>
+          <div class="rt-items" id="rtItems"></div>
+        </fieldset>
+        <button type="button" class="neutral-btn" id="rtAddEx" data-i18n="logAddExercise">Add exercise</button>
+        <button type="submit" id="rtSave" data-i18n="save">Save</button>
+        <button type="button" class="neutral-btn" id="rtDuplicate" data-i18n="duplicate">Duplicate</button>
+        <button type="button" class="neutral-btn" id="rtArchive" data-i18n="archive">Archive</button>
+        <button type="button" class="danger-btn" id="rtDelete" data-i18n="delete">Delete</button>
+        <p class="error" id="rtError" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay" id="rtPickOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="rtPickTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="rtPickTitle" data-i18n="pickRoutine">Choose routine</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <div class="pick-body">
+        <div id="rtPickList"></div>
+        <p class="empty" id="rtPickEmpty" hidden data-i18n="noRoutinesYet">No routines yet.</p>
+      </div>
+    </div>
+  </div>
 
   <div class="overlay" id="pickOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
@@ -153,6 +216,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=4"></script>
+  <script type="module" src="app.js?v=5"></script>
 </body>
 </html>

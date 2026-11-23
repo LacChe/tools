@@ -4,6 +4,7 @@ export const state = {
   profile: null, // { display_name } or null when the row is missing
   categories: [],
   catalog: [], // exercise_catalog rows, each with creator: { display_name } | null
+  routines: [], // exercise_routines rows, each with creator
 };
 
 export const catalogById = () => new Map(state.catalog.map((e) => [e.id, e]));

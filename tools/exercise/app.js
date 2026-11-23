@@ -13,13 +13,15 @@ const fail = (msg) => {
 };
 
 // Shared state: later steps import these from here.
-const [cat, prof, cata] = await Promise.all([
+const [cat, prof, cata, rout] = await Promise.all([
   sb.from("exercise_categories").select("*").order("sort_order"),
   sb.from("hub_profiles").select("display_name").eq("user_id", session.user.id).maybeSingle(),
   sb.from("exercise_catalog").select("*, creator:hub_profiles!created_by(display_name)"),
+  sb.from("exercise_routines").select("*, creator:hub_profiles!created_by(display_name)"),
 ]);
 if (cat.error) fail(cat.error.message);
 if (cata.error) fail(cata.error.message);
+if (rout.error) fail(rout.error.message);
 if (!cat.data.length) { // RLS returns nothing without access to this app
   status.textContent = t("noAccess");
   throw new Error("no access");
@@ -28,11 +30,13 @@ state.userId = session.user.id;
 state.categories = cat.data;
 state.profile = prof.error ? null : prof.data; // tolerate a missing profile row
 state.catalog = cata.data;
+state.routines = rout.data;
 
 status.remove();
 $("app").hidden = false;
 
 await import("./library.js"); // these register their listeners; they need state to be filled first
+await import("./routines.js");
 await import("./log.js");
 await import("./history.js");
 
@@ -53,13 +57,15 @@ for (const b of document.querySelectorAll(".view-toggle button")) b.addEventList
 window.addEventListener("hashchange", () => showView(viewFromHash()));
 showView(viewFromHash());
 
-// Overlays
-const closeAll = () => document.querySelectorAll(".overlay.open").forEach((o) => o.classList.remove("open"));
+// Overlays: Escape and the backdrop close only the top-most one, so a picker over a form leaves the form open.
+const closeOverlay = (o) => o.classList.remove("open");
 document.querySelectorAll(".overlay").forEach((o) => {
-  o.addEventListener("click", (e) => { if (e.target === o) closeAll(); });
-  o.querySelector("[data-close]").addEventListener("click", closeAll);
+  o.addEventListener("click", (e) => { if (e.target === o) closeOverlay(o); });
+  o.querySelector("[data-close]").addEventListener("click", () => closeOverlay(o));
 });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeAll(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") document.querySelectorAll(".overlay.open").item(document.querySelectorAll(".overlay.open").length - 1)?.classList.remove("open");
+});
 
 // Settings (language only for now; units and display name arrive in step 9)
 for (const [code, name] of Object.entries(LANGS)) {

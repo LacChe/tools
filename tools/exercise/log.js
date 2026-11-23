@@ -2,7 +2,8 @@
 import { sb } from "../../auth.js";
 import { state, catalogById } from "./state.js";
 import { t, nameOf, getLang } from "./i18n.js";
-import { openCreate } from "./library.js";
+import { pickExercise, resetRecents } from "./picker.js";
+import { openCreateRoutine } from "./routines.js";
 import {
   today, localISO, parseISO, units, toDisplayWeight, fromDisplayWeight, toDisplayDistance, fromDisplayDistance,
   fmtWeight, fmtDistance, fmtDuration, parseDuration, parseNum,
@@ -20,13 +21,17 @@ const open = (id) => $(id).classList.add("open");
 const close = (id) => $(id).classList.remove("open");
 
 // Day state ------------------------------------------------------------------------------------
-let cur = { date: null, session: null, sets: [] };
+let cur = { date: null, session: null, sets: [], drafts: [] };
 let loadSeq = 0;
 const lastCache = new Map(); // "exerciseId|date" -> sets of that exercise's previous session
-let recentIds = null; // exercise ids, most recently used first; reset whenever sets change
+let draftSeq = 0;
 
 const showError = (msg) => { $("logError").textContent = msg; };
-const bumpCaches = () => { lastCache.clear(); recentIds = null; };
+// A change on `date` can only affect "last time" lookups made for later days.
+const bumpCaches = (date) => {
+  for (const k of [...lastCache.keys()]) if (k.split("|")[1] > date) lastCache.delete(k);
+  resetRecents();
+};
 
 const hashDate = () => {
   const m = /^#log\?date=(\d{4}-\d{2}-\d{2})$/.exec(location.hash);
@@ -84,16 +89,10 @@ const lastSession = async (exId, date) => {
   return sets;
 };
 
-const loadRecents = async () => {
-  if (recentIds) return recentIds;
-  const { data, error } = await sb.from("exercise_sets").select("exercise_id").order("id", { ascending: false }).limit(300);
-  recentIds = error ? [] : [...new Set(data.map((r) => r.exercise_id))];
-  return recentIds;
-};
-
 const load = async (date) => {
   const seq = ++loadSeq;
-  cur = { date, session: null, sets: [] };
+  cur = { date, session: null, sets: [], drafts: [] };
+  draftSeq++;
   $("logDate").value = date;
   $("logWeekday").textContent = new Intl.DateTimeFormat(getLang() === "zh" ? "zh-CN" : "en", { weekday: "long" }).format(parseISO(date));
   setHash(date);
@@ -108,9 +107,10 @@ const load = async (date) => {
     if (r.error) return failLoad(r.error.message);
     sets = r.data;
   }
-  cur = { date, session: ses.data, sets };
+  cur = { date, session: ses.data, sets, drafts: [] };
   render();
   fillLastTimes(seq);
+  buildDrafts();
 };
 
 const failLoad = (msg) => {
@@ -173,6 +173,8 @@ const render = () => {
     $("sNotes").value = cur.session.notes ?? "";
   }
   $("sBody").setAttribute("aria-label", `${t("bodyweight")} (${units.weight})`);
+  $("logSaveRt").hidden = !cur.sets.length;
+  renderDrafts();
 };
 
 const fillLastTimes = async (seq) => {
@@ -197,39 +199,22 @@ const saveSession = async () => {
 $("sBody").addEventListener("change", saveSession);
 $("sNotes").addEventListener("change", saveSession);
 
-// Picker ---------------------------------------------------------------------------------------
-const renderPicker = async () => {
-  const q = $("pickSearch").value.trim().toLowerCase();
-  const recent = await loadRecents();
-  const rank = new Map(recent.map((id, i) => [id, i]));
-  const items = state.catalog
-    .filter((e) => !e.archived && (!q || [e.name_en, e.name_zh].some((n) => n && n.toLowerCase().includes(q))))
-    .sort((a, b) => (rank.get(a.id) ?? 1e9) - (rank.get(b.id) ?? 1e9) || exName(a).localeCompare(exName(b)));
-  const frag = document.createDocumentFragment();
-  for (const e of items) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "ex-row";
-    const n = document.createElement("span");
-    n.className = "ex-name";
-    n.textContent = exName(e);
-    b.append(n);
-    b.addEventListener("click", () => { close("pickOverlay"); openSetForm({ mode: "add", exId: e.id }); });
-    frag.append(b);
-  }
-  $("pickList").replaceChildren(frag);
-  $("pickEmpty").hidden = items.length > 0;
-};
+// Add exercise ---------------------------------------------------------------------------------
 $("logAdd").addEventListener("click", async () => {
-  $("pickSearch").value = "";
-  await renderPicker();
-  open("pickOverlay");
+  const ex = await pickExercise();
+  if (ex) openSetForm({ mode: "add", exId: ex.id });
 });
-$("pickSearch").addEventListener("input", renderPicker);
-$("pickNew").addEventListener("click", () => {
-  close("pickOverlay");
-  openCreate((row) => openSetForm({ mode: "add", exId: row.id }));
-});
+
+// Saving a new set (shared by the form and by ticking a routine draft) ----------------------------
+const addSetRpc = async (date, exId, v) => {
+  const args = {
+    p_entry_date: date, p_exercise_id: exId, p_reps: v.reps, p_weight: v.weight,
+    p_duration_sec: v.duration_sec, p_distance_m: v.distance_m, p_side: v.side, p_is_warmup: v.is_warmup,
+  };
+  let res = await sb.rpc("exercise_add_set", args);
+  if (res.error?.code === "23505") res = await sb.rpc("exercise_add_set", args); // position collision: retry once
+  return res;
+};
 
 // Set form (add and edit) ----------------------------------------------------------------------
 const fields = {}; // metric -> { wrap, input, toggle }
@@ -294,7 +279,7 @@ const fillFrom = (s) => {
 
 const todaysLastSet = (exId) => cur.sets.filter((s) => s.exercise_id === exId).at(-1) ?? null;
 
-async function openSetForm({ mode, exId, set, prefill }) {
+async function openSetForm({ mode, exId, set, prefill, fill }) {
   const ex = catalogById().get(mode === "edit" ? set.exercise_id : exId);
   if (!ex) return showError(t("missingExercise"));
   sf = { mode, ex, date: cur.date, set: set ?? null, copy: null };
@@ -318,7 +303,8 @@ async function openSetForm({ mode, exId, set, prefill }) {
     sf.copy = todaysLastSet(ex.id);
     if (!sf.copy) { const prev = await lastSession(ex.id, sf.date); sf.copy = prev.at(-1) ?? null; }
     $("setCopy").hidden = !sf.copy;
-    if (prefill && sf.copy) fillFrom(sf.copy);
+    if (fill) fillFrom(fill);
+    else if (prefill && sf.copy) fillFrom(sf.copy);
   }
   open("setOverlay");
 }
@@ -366,27 +352,20 @@ $("setForm").addEventListener("submit", async (ev) => {
   const { values, error } = readForm();
   if (error) { $("setError").textContent = error; return; }
   $("setSave").disabled = true;
-  let res;
-  if (sf.mode === "add") {
-    const args = {
-      p_entry_date: sf.date, p_exercise_id: sf.ex.id, p_reps: values.reps, p_weight: values.weight,
-      p_duration_sec: values.duration_sec, p_distance_m: values.distance_m, p_side: values.side, p_is_warmup: values.is_warmup,
-    };
-    res = await sb.rpc("exercise_add_set", args);
-    if (res.error?.code === "23505") res = await sb.rpc("exercise_add_set", args); // position collision: retry once
-  } else {
-    res = await sb.from("exercise_sets").update(values).eq("id", sf.set.id).select().single();
-  }
+  const res = sf.mode === "add"
+    ? await addSetRpc(sf.date, sf.ex.id, values)
+    : await sb.from("exercise_sets").update(values).eq("id", sf.set.id).select().single();
   $("setSave").disabled = false;
   if (res.error) { $("setError").textContent = t("logFail", { msg: res.error.message }); return; }
 
   if (sf.mode === "add") cur.sets.push(res.data);
   else cur.sets = cur.sets.map((s) => (s.id === res.data.id ? res.data : s));
   if (!cur.session) await refreshSession();
-  bumpCaches();
+  bumpCaches(cur.date);
   close("setOverlay");
   render();
   fillLastTimes(loadSeq);
+  buildDrafts();
   changed();
 });
 
@@ -403,15 +382,144 @@ $("setDelete").addEventListener("click", async () => {
   const { error } = await sb.from("exercise_sets").delete().eq("id", sf.set.id);
   if (error) { $("setDelete").disabled = false; $("setError").textContent = t("logFail", { msg: error.message }); return; }
   cur.sets = cur.sets.filter((s) => s.id !== sf.set.id);
-  if (!cur.sets.length && cur.session) { // an empty day should not linger in History
+  if (!cur.sets.length && cur.session && cur.session.routine_id == null) { // an empty day should not linger (a started routine keeps its day)
     const r = await sb.from("exercise_sessions").delete().eq("id", cur.session.id);
     if (!r.error) cur.session = null;
   }
   $("setDelete").disabled = false;
-  bumpCaches();
+  bumpCaches(cur.date);
   close("setOverlay");
   render();
+  buildDrafts();
   changed();
+});
+
+// Routines: drafts, start, save as routine ---------------------------------------------------------
+const FIELD = { reps: "reps", weight: "weight", duration: "duration_sec", distance: "distance_m" };
+const draftValues = (set) => ({
+  reps: set?.reps ?? null, weight: set?.weight ?? null, duration_sec: set?.duration_sec ?? null,
+  distance_m: set?.distance_m ?? null, side: set?.side ?? null, is_warmup: false,
+});
+const complete = (ex, v) => ex.required_metrics.every((m) => v[FIELD[m]] != null);
+const currentRoutine = () => (cur.session?.routine_id != null ? state.routines.find((r) => r.id === cur.session.routine_id) ?? null : null);
+
+// Draft rows for the day's routine: what is left of each exercise's target sets, pre-filled from
+// the user's last session of it. Drafts are never stored; ticking one saves it as a real set.
+const buildDrafts = async () => {
+  const mySeq = ++draftSeq;
+  const routine = currentRoutine();
+  const out = [];
+  if (routine) {
+    const byId = catalogById();
+    for (const item of routine.items) {
+      const ex = byId.get(item.exercise_id);
+      if (!ex || ex.archived) continue; // missing or archived exercises are skipped
+      const logged = cur.sets.filter((s) => s.exercise_id === ex.id).length;
+      const remaining = Math.max(0, (Number(item.sets) || 0) - logged);
+      if (!remaining) continue;
+      const hist = await lastSession(ex.id, cur.date);
+      if (mySeq !== draftSeq) return;
+      out.push({ exId: ex.id, rows: Array.from({ length: remaining }, (_, k) => draftValues(hist[logged + k] ?? hist.at(-1) ?? null)) });
+    }
+  }
+  if (mySeq !== draftSeq) return;
+  cur.drafts = out;
+  renderDrafts();
+};
+
+const renderDrafts = () => {
+  const host = $("logDrafts");
+  const routine = currentRoutine();
+  host.hidden = !cur.drafts.length;
+  if (!cur.drafts.length) { host.replaceChildren(); return; }
+  const byId = catalogById();
+  const frag = document.createDocumentFragment();
+  const title = document.createElement("h2");
+  title.className = "sec-title";
+  title.textContent = t("routineDrafts", { name: routine ? nameOf(routine) || t("unnamed") : "" });
+  frag.append(title);
+  for (const g of cur.drafts) {
+    const ex = byId.get(g.exId);
+    const box = document.createElement("div");
+    box.className = "log-group";
+    const name = document.createElement("span");
+    name.className = "log-name";
+    name.textContent = exName(ex);
+    box.append(name);
+    g.rows.forEach((v, k) => {
+      const row = document.createElement("div");
+      row.className = "draft-row";
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "log-set draft";
+      const ok = complete(ex, v);
+      b.textContent = ok ? setText(v) : t("draftEmpty");
+      b.addEventListener("click", () => openSetForm({ mode: "add", exId: g.exId, fill: v }));
+      const tick = document.createElement("button");
+      tick.type = "button";
+      tick.className = "tick-btn";
+      tick.textContent = "✓";
+      tick.setAttribute("aria-label", t("tickSet"));
+      tick.addEventListener("click", async () => {
+        if (!ok) return openSetForm({ mode: "add", exId: g.exId, fill: v }); // needs values first
+        tick.disabled = true;
+        const res = await addSetRpc(cur.date, g.exId, v);
+        if (res.error) { tick.disabled = false; return showError(t("logFail", { msg: res.error.message })); }
+        cur.sets.push(res.data);
+        if (!cur.session) await refreshSession();
+        bumpCaches(cur.date);
+        render();
+        fillLastTimes(loadSeq);
+        buildDrafts();
+        changed();
+      });
+      row.append(b, tick);
+      box.append(row);
+    });
+    frag.append(box);
+  }
+  host.replaceChildren(frag);
+};
+
+const renderRoutinePick = () => {
+  const items = state.routines.filter((r) => !r.archived).sort((a, b) => (nameOf(a) || "").localeCompare(nameOf(b) || ""));
+  const frag = document.createDocumentFragment();
+  for (const r of items) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "ex-row";
+    const n = document.createElement("span");
+    n.className = "ex-name";
+    n.textContent = nameOf(r) || t("unnamed");
+    const m = document.createElement("span");
+    m.className = "ex-meta";
+    m.textContent = t("exerciseCount", { n: r.items.length });
+    b.append(n, m);
+    b.addEventListener("click", () => { close("rtPickOverlay"); startRoutine(r); });
+    frag.append(b);
+  }
+  $("rtPickList").replaceChildren(frag);
+  $("rtPickEmpty").hidden = items.length > 0;
+};
+$("logStart").addEventListener("click", () => { renderRoutinePick(); open("rtPickOverlay"); });
+
+// Upsert today's session with the routine (user_id is explicit so the insert path matches the unique key).
+const startRoutine = async (routine) => {
+  showError("");
+  const { data, error } = await sb.from("exercise_sessions")
+    .upsert({ user_id: state.userId, entry_date: cur.date, routine_id: routine.id }, { onConflict: "user_id,entry_date" })
+    .select().single();
+  if (error) return showError(t("logFail", { msg: error.message }));
+  cur.session = data;
+  render();
+  buildDrafts();
+};
+
+// "Save as routine": each distinct exercise of the day in order, with its (non-warm-up) set count.
+$("logSaveRt").addEventListener("click", () => {
+  const counts = new Map();
+  for (const s of cur.sets) counts.set(s.exercise_id, (counts.get(s.exercise_id) ?? 0) + (s.is_warmup ? 0 : 1));
+  openCreateRoutine([...counts].map(([exercise_id, n]) => ({ exercise_id, sets: Math.max(1, n) })));
 });
 
 // Date bar and wiring --------------------------------------------------------------------------
@@ -436,8 +544,9 @@ document.addEventListener("exercise:lang", () => {
     $("setSide").value = side;
     resetArm();
   }
-  if ($("pickOverlay").classList.contains("open")) renderPicker();
+  if ($("rtPickOverlay").classList.contains("open")) renderRoutinePick();
 });
-document.addEventListener("exercise:catalog", () => { render(); fillLastTimes(loadSeq); });
+document.addEventListener("exercise:catalog", () => { render(); fillLastTimes(loadSeq); buildDrafts(); });
+document.addEventListener("exercise:routines", () => { buildDrafts(); });
 
 load(hashDate() ?? today());
