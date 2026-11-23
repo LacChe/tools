@@ -1,6 +1,7 @@
 import { sb, requireAuth } from "../../auth.js";
 import { t, getLang, setLang, applyStatic, LANGS } from "./i18n.js";
 import { state } from "./state.js";
+import { units, saveUnits } from "./common.js";
 
 applyStatic();
 const session = await requireAuth();
@@ -9,6 +10,12 @@ const status = $("status");
 
 const fail = (msg) => {
   status.textContent = t("loadFail", { msg });
+  const retry = document.createElement("button"); // an expired sign-in or a dropped connection usually clears on reload
+  retry.type = "button";
+  retry.className = "neutral-btn";
+  retry.textContent = t("retry");
+  retry.addEventListener("click", () => location.reload());
+  status.append(" ", retry);
   throw new Error("load failed");
 };
 
@@ -76,5 +83,41 @@ for (const [code, name] of Object.entries(LANGS)) {
   $("sLang").append(o);
 }
 $("sLang").value = getLang();
-$("openSettings").addEventListener("click", () => $("settingsOverlay").classList.add("open"));
+$("openSettings").addEventListener("click", () => {
+  $("sLang").value = getLang();
+  $("sWeight").value = units.weight;
+  $("sDist").value = units.distance;
+  $("sName").value = state.profile?.display_name ?? "";
+  $("sError").textContent = "";
+  $("settingsOverlay").classList.add("open");
+});
 $("sLang").addEventListener("change", () => setLang($("sLang").value));
+
+// Units are a per-device display choice: data stays in kg and meters. Other panels close so no form shows stale units.
+const onUnits = () => {
+  units.weight = $("sWeight").value;
+  units.distance = $("sDist").value;
+  saveUnits();
+  document.querySelectorAll(".overlay.open").forEach((o) => { if (o.id !== "settingsOverlay") closeOverlay(o); });
+  document.dispatchEvent(new Event("exercise:units"));
+};
+$("sWeight").addEventListener("change", onUnits);
+$("sDist").addEventListener("change", onUnits);
+
+// Display name: shown as "created by" on shared exercises and routines.
+$("sName").addEventListener("change", async () => {
+  const name = $("sName").value.trim();
+  $("sError").textContent = "";
+  if (!name || name.length > 40) {
+    $("sName").value = state.profile?.display_name ?? "";
+    $("sError").textContent = t("badName");
+    return;
+  }
+  const { data, error } = await sb.from("hub_profiles").update({ display_name: name }).eq("user_id", state.userId).select("display_name").maybeSingle();
+  if (error) { $("sError").textContent = t("saveFail", { msg: error.message }); return; }
+  if (!data) { $("sError").textContent = t("profileMissing"); return; }
+  state.profile = data;
+  for (const row of [...state.catalog, ...state.routines]) if (row.created_by === state.userId) row.creator = { display_name: data.display_name };
+  document.dispatchEvent(new Event("exercise:catalog"));
+  document.dispatchEvent(new Event("exercise:routines"));
+});

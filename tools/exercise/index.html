@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -43,6 +43,7 @@
         </label>
       </div>
       <p class="error" id="logError" role="alert"></p>
+      <button type="button" class="neutral-btn" id="logRetry" data-i18n="retry" hidden>Retry</button>
       <div id="logList"></div>
       <p class="empty" id="logEmpty" hidden data-i18n="noSets">Nothing logged this day.</p>
       <div id="logDrafts" hidden></div>
@@ -73,6 +74,7 @@
         </div>
       </div>
       <p class="error" id="prError" role="alert"></p>
+      <button type="button" class="neutral-btn" id="prRetry" data-i18n="retry" hidden>Retry</button>
       <p class="empty" id="prHint" data-i18n="prHint">Pick an exercise to see its trend.</p>
       <div id="prBody"></div>
       <p class="empty" id="prEmpty" hidden data-i18n="prNoData">No sets for this exercise in this range.</p>
@@ -231,10 +233,20 @@
         <label class="field"><span data-i18n="language">Language</span>
           <select id="sLang"></select>
         </label>
+        <label class="field"><span data-i18n="weightUnit">Weight unit</span>
+          <select id="sWeight"><option value="kg">kg</option><option value="lb">lb</option></select>
+        </label>
+        <label class="field"><span data-i18n="distanceUnit">Distance unit</span>
+          <select id="sDist"><option value="m">m</option><option value="km">km</option></select>
+        </label>
+        <label class="field"><span data-i18n="displayName">Display name</span>
+          <input type="text" id="sName" maxlength="40" autocomplete="off">
+        </label>
+        <p class="error" id="sError" role="alert"></p>
       </form>
     </div>
   </div>
 
-  <script type="module" src="app.js?v=6"></script>
+  <script type="module" src="app.js?v=7"></script>
 </body>
 </html>
