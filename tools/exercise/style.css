@@ -44,3 +44,32 @@ form.stack .check input { min-height: 0; width: 18px; height: 18px; padding: 0; 
 .edit-info:empty { display: none; }
 form.stack .neutral-btn { background: none; color: var(--text); border: 1px solid var(--border); font-weight: 400; }
 form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
+
+/* Log */
+.date-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.date-bar button { width: 44px; padding: 0; font-size: 22px; flex: none; }
+.date-mid { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.date-mid input { text-align: center; }
+.session-box { display: flex; gap: 8px; margin-bottom: 12px; }
+.session-box .field { flex: 1; min-width: 0; }
+.session-box .field:first-child { flex: 0 0 34%; }
+.add-btn { width: 100%; margin-top: 8px; background: var(--accent); color: var(--on-accent); border: 0; font-weight: 700; }
+.neutral-btn { width: 100%; background: none; color: var(--text); border: 1px solid var(--border); font-weight: 400; }
+
+.log-group { margin-bottom: 14px; }
+.log-head { display: flex; align-items: center; gap: 8px; }
+.log-name { flex: 1; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+.log-head button { flex: none; min-height: 36px; padding: 0 12px; font-size: 13px; }
+.log-last { margin: 0 0 4px; font-size: 12px; color: var(--muted); min-height: 1.2em; }
+.log-set {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; margin-bottom: 4px; padding: 0 14px;
+  color: var(--text); text-align: left; border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border);
+}
+.log-set:hover { background: var(--surface-hover); }
+.log-set.warm { opacity: 0.7; }
+.log-set .n { color: var(--muted); font-size: 12px; min-width: 3.5em; }
+
+.pick-body { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.set-fields { display: flex; flex-direction: column; gap: 12px; }
+.set-fields .field input { width: 100%; }

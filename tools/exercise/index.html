@@ -7,7 +7,7 @@
   <title>Exercise</title>
   <link rel="stylesheet" href="../../base.css?v=3">
   <link rel="stylesheet" href="../../theme.css?v=4">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -25,7 +25,28 @@
       <button type="button" data-view="library" aria-pressed="false" data-i18n="library">Library</button>
     </nav>
 
-    <section id="logView" data-view-section="log"><p class="empty" data-i18n="comingLog">The log page comes in step 4.</p></section>
+    <section id="logView" data-view-section="log">
+      <div class="date-bar">
+        <button type="button" id="logPrev" aria-label="Previous day" data-i18n-aria="prevDay">‹</button>
+        <div class="date-mid">
+          <input type="date" id="logDate" class="lib-input" aria-label="Date" data-i18n-aria="date">
+          <span class="ex-meta" id="logWeekday"></span>
+        </div>
+        <button type="button" id="logNext" aria-label="Next day" data-i18n-aria="nextDay">›</button>
+      </div>
+      <div class="session-box" id="sessionBox" hidden>
+        <label class="field"><span data-i18n="bodyweight">Body weight</span>
+          <input type="text" inputmode="decimal" id="sBody" class="lib-input" autocomplete="off">
+        </label>
+        <label class="field"><span data-i18n="notes">Notes</span>
+          <input type="text" id="sNotes" class="lib-input" autocomplete="off">
+        </label>
+      </div>
+      <p class="error" id="logError" role="alert"></p>
+      <div id="logList"></div>
+      <p class="empty" id="logEmpty" hidden data-i18n="noSets">Nothing logged this day.</p>
+      <button type="button" id="logAdd" class="add-btn" data-i18n="logAddExercise">Add exercise</button>
+    </section>
     <section id="historyView" data-view-section="history" hidden><p class="empty" data-i18n="comingHistory">The history page comes in step 6.</p></section>
     <section id="progressView" data-view-section="progress" hidden><p class="empty" data-i18n="comingProgress">The progress page comes in step 8.</p></section>
     <section id="libraryView" data-view-section="library" hidden>
@@ -41,6 +62,42 @@
       <p class="empty" id="libEmpty" hidden data-i18n="noExercises">No exercises found.</p>
     </section>
   </main>
+
+  <div class="overlay" id="pickOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="pickTitle" data-i18n="pickTitle">Choose exercise</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <div class="pick-body">
+        <input type="search" id="pickSearch" class="lib-input" aria-label="Search exercises" data-i18n-aria="search">
+        <div id="pickList"></div>
+        <p class="empty" id="pickEmpty" hidden data-i18n="noMatch">No matching exercises.</p>
+        <button type="button" class="neutral-btn" id="pickNew" data-i18n="createNew">Create new exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="setOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="setTitle"></h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <form class="stack" id="setForm" novalidate>
+        <p class="edit-info" id="setInfo"></p>
+        <div class="set-fields" id="setFields"></div>
+        <label class="field" id="setSideWrap" hidden><span data-i18n="side">Side</span>
+          <select id="setSide"></select>
+        </label>
+        <label class="check"><input type="checkbox" id="setWarm"><span data-i18n="warmup">Warm-up</span></label>
+        <button type="button" class="neutral-btn" id="setCopy" data-i18n="copyLast" hidden>Copy last set</button>
+        <button type="submit" id="setSave" data-i18n="saveSet">Save set</button>
+        <button type="button" class="danger-btn" id="setDelete" data-i18n="delete" hidden>Delete</button>
+        <p class="error" id="setError" role="alert"></p>
+      </form>
+    </div>
+  </div>
 
   <div class="overlay" id="exOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="exTitle">
@@ -92,6 +149,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=2"></script>
+  <script type="module" src="app.js?v=3"></script>
 </body>
 </html>

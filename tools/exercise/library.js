@@ -134,7 +134,7 @@ function syncMetrics() {
 
 // Form --------------------------------------------------------------------------------------
 // form.mode: "create" | "edit" | "view"; form.row: the exercise being edited or viewed.
-const form = { mode: "create", row: null, existing: null };
+const form = { mode: "create", row: null, existing: null, onSaved: null };
 let armTimer = null;
 const resetArm = () => {
   clearTimeout(armTimer);
@@ -155,8 +155,9 @@ const fillParents = (current, selfId, hasChildren) => {
 };
 
 // source: the row to pre-fill from (or null for blank). blankNames: leave names empty (duplicate).
-function openForm(source, mode, blankNames = false) {
+function openForm(source, mode, blankNames = false, onSaved = null) {
   form.mode = mode;
+  form.onSaved = onSaved;
   form.row = mode === "create" ? null : source;
   resetArm();
   $("exError").textContent = "";
@@ -237,6 +238,7 @@ $("exForm").addEventListener("submit", async (ev) => {
   if (error) return mapError(error);
   upsertLocal(data);
   closeForm();
+  form.onSaved?.(data); // e.g. the Log picker continues with the new exercise
 });
 
 $("exOpenExisting").addEventListener("click", () => {
@@ -271,6 +273,9 @@ $("exDelete").addEventListener("click", async () => {
   removeLocal(form.row.id);
   closeForm();
 });
+
+// Used by the Log picker: open the create form and call onSaved(row) once the exercise exists.
+export const openCreate = (onSaved) => openForm(null, "create", false, onSaved);
 
 // Wiring ------------------------------------------------------------------------------------
 $("libNew").addEventListener("click", () => openForm(null, "create"));
