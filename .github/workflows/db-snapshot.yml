@@ -1,0 +1,78 @@
+name: DB schema snapshot
+
+# Copies the live Supabase schema into db/schema.sql so the repo documents it.
+# Supabase stays the source of truth: change the database there, then run this
+# workflow (Actions tab -> "DB schema snapshot" -> Run workflow) or wait for the
+# weekly run. Never edit db/schema.sql by hand.
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: db-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dump the public schema
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Repository secret SUPABASE_DB_URL is not set."
+            exit 1
+          fi
+
+          raw="$RUNNER_TEMP/schema.dump.sql"
+          supabase db dump --db-url "$SUPABASE_DB_URL" --schema public -f "$raw"
+
+          # A failed or empty dump must never overwrite the committed file.
+          if ! grep -q 'CREATE TABLE' "$raw"; then
+            echo "::error::The dump contains no tables; leaving db/schema.sql untouched."
+            exit 1
+          fi
+
+          # This file is published with the site, so refuse to commit anything
+          # that looks like personal data (emails) or hard-coded user ids (UUIDs).
+          if grep -E -q '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' "$raw"; then
+            echo "::error::The dump contains an email address or a UUID. Not committing it; check the schema for hard-coded ids."
+            exit 1
+          fi
+
+          mkdir -p db
+          {
+            echo "-- Generated from Supabase (public schema) by .github/workflows/db-snapshot.yml."
+            echo "-- Do not edit by hand: change the database, then run the workflow again."
+            echo
+            # Newer pg_dump versions add a random \restrict token that would
+            # make every dump differ; it is not part of the schema.
+            grep -v -E '^\\(un)?restrict ' "$raw"
+          } > db/schema.sql
+
+      - name: Commit if the schema changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db/schema.sql
+          if git diff --cached --quiet; then
+            echo "Schema unchanged; nothing to commit."
+          else
+            git commit -m "Update db/schema.sql from Supabase"
+            git push origin HEAD
+          fi
