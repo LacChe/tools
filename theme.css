@@ -1,2 +1,21 @@
 /* Placeholder for the future theme overlay: redefine the variables from base.css here. */
 :root[data-app="exercise"] { --accent: var(--accent-2); }
+
+/* Expense type colors: one token per category slug (--cat-<slug>), read through catColor() in tools/expenses/common.js.
+   A slug with no token here falls back to --muted. A theme redefines these. */
+:root[data-app="expenses"] {
+  --cat-food: #d9896a;
+  --cat-drink: #6f9fc9;
+  --cat-transport: #9bb872;
+  --cat-supplies: #8f9ad6;
+  --cat-clothes: #bb88c6;
+  --cat-gift: #d3b65f;
+  --cat-maintenance: #a89a8a;
+  --cat-entertainment: #5fb8b0;
+  --cat-health: #d9777f;
+  --cat-housing: #7fb07f;
+  --cat-utilities: #c880ae;
+  --cat-education: #e3a05c;
+  --cat-travel: #86c3e3;
+  --cat-other: #9aa0ad;
+}

@@ -19,21 +19,6 @@
   --surface-2: #1c212b;
   --text-soft: #d9d3c2;
   --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.5);
-  /* Expense type colors: one token per category slug (--cat-<slug>). Themes redefine these. */
-  --cat-food: #d9896a;
-  --cat-drink: #6f9fc9;
-  --cat-transport: #9bb872;
-  --cat-supplies: #8f9ad6;
-  --cat-clothes: #bb88c6;
-  --cat-gift: #d3b65f;
-  --cat-maintenance: #a89a8a;
-  --cat-entertainment: #5fb8b0;
-  --cat-health: #d9777f;
-  --cat-housing: #7fb07f;
-  --cat-utilities: #c880ae;
-  --cat-education: #e3a05c;
-  --cat-travel: #86c3e3;
-  --cat-other: #9aa0ad;
   --radius: 10px;
   --font: 'Noto Serif SC', 'PingFang SC', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
 }
@@ -62,6 +47,11 @@ button, .btn {
   font: inherit;
   cursor: pointer;
 }
+
+/* Header bar variants the apps use: Home on the left, title in the middle, an icon button on the right. */
+.bar-centered h1 { flex: 1; text-align: center; }
+.bar .btn { display: inline-flex; align-items: center; text-decoration: none; }
+.bar-icon { width: 44px; padding: 0; font-size: 20px; }
 
 .grid {
   display: grid;
@@ -118,6 +108,21 @@ form.stack button { background: var(--accent); color: var(--on-accent); border: 
 .success { color: var(--success); min-height: 1.4em; margin: 0; font-size: 14px; }
 
 .status { color: var(--muted); padding: 24px 0; }
+
+/* Small pieces shared by the apps. */
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+.field input, .field select { width: 100%; }
+.empty { color: var(--muted); }
+.list-end { min-height: 24px; margin: 8px 0 32px; text-align: center; font-size: 13px; color: var(--muted); }
+.list-end.retry { cursor: pointer; color: var(--text-soft); text-decoration: underline; }
+.sec-title { margin: 0 0 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
+.edit-info { margin: 0; color: var(--text-soft); line-height: 1.5; }
+.edit-info:empty { display: none; }
+
+/* Tab switcher: the look is shared; each app sets how the buttons are sized and spaced. */
+.view-toggle { display: flex; margin: 0 auto 20px; }
+.view-toggle button { font-size: 14px; }
+.view-toggle button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); }
 
 .overlay {
   position: fixed; inset: 0; background: var(--scrim);
