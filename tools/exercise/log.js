@@ -4,8 +4,9 @@ import { state, catalogById } from "./state.js";
 import { t, nameOf, getLang } from "./i18n.js";
 import { pickExercise, resetRecents } from "./picker.js";
 import { openCreateRoutine } from "./routines.js";
+import { today, localISO, parseISO } from "../../shared/dates.js";
 import {
-  today, localISO, parseISO, units, toDisplayWeight, fromDisplayWeight, toDisplayDistance, fromDisplayDistance,
+  units, toDisplayWeight, fromDisplayWeight, toDisplayDistance, fromDisplayDistance,
   fmtWeight, fmtDistance, fmtDuration, parseDuration, parseNum,
 } from "./common.js";
 

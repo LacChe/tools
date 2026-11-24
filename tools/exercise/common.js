@@ -1,11 +1,5 @@
-// Helpers shared by the exercise views.
-
-// Local-date helpers (never toISOString: it returns the UTC date).
-export const pad = (n) => String(n).padStart(2, "0");
-export const localISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-export const today = () => localISO(new Date());
-export const addDays = (iso, n) => { const d = parseISO(iso); d.setDate(d.getDate() + n); return localISO(d); };
-export const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+// Helpers shared by the exercise views. Date helpers are in ../../shared/dates.js.
+import { pad } from "../../shared/dates.js";
 
 // Units. Data is stored in kg, meters and seconds; these helpers convert for display and input.
 // The preference is a per-device choice kept in localStorage (Settings changes it in step 9).

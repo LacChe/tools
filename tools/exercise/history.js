@@ -2,7 +2,8 @@
 import { sb } from "../../auth.js";
 import { catalogById } from "./state.js";
 import { t, nameOf, getLang } from "./i18n.js";
-import { parseISO, fmtWeight, fmtDistance, fmtDuration } from "./common.js";
+import { parseISO } from "../../shared/dates.js";
+import { fmtWeight, fmtDistance, fmtDuration } from "./common.js";
 
 const $ = (id) => document.getElementById(id);
 const PAGE = 40;
