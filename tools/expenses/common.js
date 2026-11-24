@@ -1,10 +1,6 @@
 // Helpers shared by the records page (app.js) and the reports page (reports.js).
+// Basic date helpers (today, localISO, parseISO, pad) are in ../../shared/dates.js.
 
-// Local-date helpers (never toISOString: it returns the UTC date).
-export const pad = (n) => String(n).padStart(2, "0");
-export const localISO = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-export const today = () => localISO(new Date());
-export const parseISO = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
 // Same day one month earlier, clamped to the month's length (Mar 31 -> Feb 28, not Mar 3).
 export const monthBack = (d) => {
   const first = new Date(d.getFullYear(), d.getMonth() - 1, 1);

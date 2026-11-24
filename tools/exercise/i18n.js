@@ -1,15 +1,11 @@
-// Language support for the exercise app: English and Simplified Chinese.
-// The choice is kept in localStorage so it survives closing the page.
-
-const KEY = "exercise.lang";
-export const LANGS = { en: "English", zh: "简体中文" };
+// Strings for the exercise app. Words every app shares (Home, Save, Close, ...) live in shared/i18n.js.
+import { LANGS, createI18n } from "../../shared/i18n.js";
 
 const STR = {
   en: {
-    home: "Home", title: "Exercise", settings: "Settings", view: "View", close: "Close",
-    log: "Log", history: "History", progress: "Progress", library: "Library", language: "Language",
-    loading: "Loading…", loadFail: "Could not load data: {msg}", noAccess: "No access to this app.",
-    prevDay: "Previous day", nextDay: "Next day", date: "Date", bodyweight: "Body weight", notes: "Notes",
+    title: "Exercise",
+    log: "Log", history: "History", progress: "Progress", library: "Library",
+    prevDay: "Previous day", nextDay: "Next day", bodyweight: "Body weight", notes: "Notes",
     noSets: "Nothing logged this day.", logAddExercise: "Add exercise", lastTime: "Last time: {text}",
     addSet: "+ set", setN: "Set {n}", pickTitle: "Choose exercise", noMatch: "No matching exercises.",
     createNew: "Create new exercise", copyLast: "Copy last set", addMetric: "+ {metric}", side: "Side",
@@ -17,7 +13,7 @@ const STR = {
     addSetTitle: "Add set", editSetTitle: "Edit set", needValue: "Enter {metric}.", badNumber: "Enter a valid value for {metric}.",
     logFail: "Could not save: {msg}", loadDayFail: "Could not load this day: {msg}", retry: "Retry", warmupTag: "warm-up",
     missingExercise: "Missing exercise",
-    noHistory: "No workouts logged yet.", end: "You've reached the end.", moreFail: "Couldn't load more. Tap to retry.",
+    noHistory: "No workouts logged yet.",
     historyFail: "Could not load history: {msg}", setCount: "{n} sets", oneSet: "1 set",
     tabExercises: "Exercises", tabRoutines: "Routines", searchRoutines: "Search routines", newRoutine: "New routine",
     noRoutines: "No routines found.", exerciseCount: "{n} exercises", addRoutine: "New routine", editRoutine: "Edit routine",
@@ -28,7 +24,7 @@ const STR = {
     noRoutinesYet: "No routines yet. Create one in Library, or use Save as routine.",
     routineDrafts: "Routine: {name}", tickSet: "Save this set", draftEmpty: "Tap to enter values",
     prChoose: "Choose an exercise", prHint: "Pick an exercise to see its trend.", prNoData: "No sets for this exercise in this range.",
-    includeVariants: "Include variants", from: "From", to: "To", range30: "30 days", range90: "90 days", range365: "1 year", rangeAll: "All",
+    includeVariants: "Include variants", range30: "30 days", range90: "90 days", range365: "1 year", rangeAll: "All",
     prWeight: "Top set weight", prVolume: "Volume (reps × weight)", prDuration: "Longest duration", prDistance: "Total distance",
     prLatest: "Latest", prBest: "Best", prChange: "Change", prFail: "Could not load progress: {msg}",
     weightUnit: "Weight unit", distanceUnit: "Distance unit", displayName: "Display name",
@@ -40,18 +36,17 @@ const STR = {
     editExercise: "Edit exercise", viewExercise: "Exercise", addExercise: "New exercise",
     nameEn: "Name (English)", nameZh: "Name (中文)", noCategory: "No category", parent: "Variant of (optional)", noParent: "None",
     requiredMetrics: "Always logged", optionalMetrics: "Optional (behind a toggle)", primaryMetric: "Chart metric",
-    unilateral: "Done one side at a time", save: "Save", archive: "Archive", unarchive: "Unarchive",
-    duplicate: "Duplicate", delete: "Delete", deleteArm: "Tap again to delete", openExisting: "Open existing",
+    unilateral: "Done one side at a time", archive: "Archive", unarchive: "Unarchive",
+    duplicate: "Duplicate", openExisting: "Open existing",
     needName: "Enter a name in English or Chinese.", needMetric: "Pick at least one always-logged metric.",
     nameTaken: "An exercise with this name already exists: {name}.", nameTakenArchived: "An exercise with this name already exists (archived): {name}.",
     badData: "These values were rejected. Check the names and metrics.", hasSets: "This exercise has logged sets. Archive it instead.",
     saveFail: "Could not save: {msg}", notYours: "Created by {name}. Only they can edit it; you can duplicate it.",
   },
   zh: {
-    home: "主页", title: "运动", settings: "设置", view: "视图", close: "关闭",
-    log: "记录", history: "历史", progress: "进度", library: "动作库", language: "语言",
-    loading: "加载中…", loadFail: "无法加载数据：{msg}", noAccess: "无权使用此应用。",
-    prevDay: "前一天", nextDay: "后一天", date: "日期", bodyweight: "体重", notes: "备注",
+    title: "运动",
+    log: "记录", history: "历史", progress: "进度", library: "动作库",
+    prevDay: "前一天", nextDay: "后一天", bodyweight: "体重", notes: "备注",
     noSets: "这一天没有记录。", logAddExercise: "添加动作", lastTime: "上次：{text}",
     addSet: "+ 一组", setN: "第 {n} 组", pickTitle: "选择动作", noMatch: "没有匹配的动作。",
     createNew: "新建动作", copyLast: "复制上一组", addMetric: "+ {metric}", side: "侧",
@@ -59,7 +54,7 @@ const STR = {
     addSetTitle: "添加一组", editSetTitle: "编辑本组", needValue: "请输入{metric}。", badNumber: "{metric}的值无效。",
     logFail: "无法保存：{msg}", loadDayFail: "无法加载这一天：{msg}", retry: "重试", warmupTag: "热身",
     missingExercise: "动作已缺失",
-    noHistory: "还没有训练记录。", end: "已经到底了。", moreFail: "加载失败，点按重试。",
+    noHistory: "还没有训练记录。",
     historyFail: "无法加载历史：{msg}", setCount: "{n} 组", oneSet: "1 组",
     tabExercises: "动作", tabRoutines: "训练计划", searchRoutines: "搜索训练计划", newRoutine: "新建训练计划",
     noRoutines: "没有找到训练计划。", exerciseCount: "{n} 个动作", addRoutine: "新建训练计划", editRoutine: "编辑训练计划",
@@ -70,7 +65,7 @@ const STR = {
     noRoutinesYet: "还没有训练计划。可在动作库中创建，或使用「保存为训练计划」。",
     routineDrafts: "训练计划：{name}", tickSet: "保存这一组", draftEmpty: "点按输入数值",
     prChoose: "选择动作", prHint: "选择一个动作查看趋势。", prNoData: "此时间段内该动作没有记录。",
-    includeVariants: "包含变式", from: "从", to: "至", range30: "30 天", range90: "90 天", range365: "1 年", rangeAll: "全部",
+    includeVariants: "包含变式", range30: "30 天", range90: "90 天", range365: "1 年", rangeAll: "全部",
     prWeight: "最大重量", prVolume: "训练量（次数 × 重量）", prDuration: "最长时长", prDistance: "总距离",
     prLatest: "最近", prBest: "最佳", prChange: "变化", prFail: "无法加载进度：{msg}",
     weightUnit: "重量单位", distanceUnit: "距离单位", displayName: "显示名称",
@@ -82,8 +77,8 @@ const STR = {
     editExercise: "编辑动作", viewExercise: "动作", addExercise: "新建动作",
     nameEn: "名称（English）", nameZh: "名称（中文）", noCategory: "无分类", parent: "属于（可选）", noParent: "无",
     requiredMetrics: "必须记录", optionalMetrics: "可选（需展开）", primaryMetric: "图表指标",
-    unilateral: "分左右两侧做", save: "保存", archive: "归档", unarchive: "取消归档",
-    duplicate: "复制", delete: "删除", deleteArm: "再点一次确认删除", openExisting: "打开已有动作",
+    unilateral: "分左右两侧做", archive: "归档", unarchive: "取消归档",
+    duplicate: "复制", openExisting: "打开已有动作",
     needName: "请输入英文或中文名称。", needMetric: "请至少选择一个必须记录的指标。",
     nameTaken: "已存在同名动作：{name}。", nameTakenArchived: "已存在同名动作（已归档）：{name}。",
     badData: "数据被拒绝，请检查名称和指标。", hasSets: "此动作已有训练记录，请改为归档。",
@@ -91,32 +86,7 @@ const STR = {
   },
 };
 
-let lang = "en";
-try { const s = localStorage.getItem(KEY); if (s in LANGS) lang = s; } catch { /* storage unavailable */ }
+const i18n = createI18n({ strings: STR, event: "exercise:lang", legacyKey: "exercise.lang" });
 
-export const getLang = () => lang;
-export const t = (key, vars = {}) => {
-  const s = STR[lang][key] ?? STR.en[key] ?? key;
-  return typeof s === "string" ? s.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "") : s;
-};
-
-// Display name for rows with name_en / name_zh (catalog, routines): current language, falling back to the other.
-export const nameOf = (row) => (lang === "zh" ? row.name_zh || row.name_en : row.name_en || row.name_zh) ?? "";
-// Display name for lookup rows with label_en / label_zh (categories).
-export const labelOf = (row) => (lang === "zh" && row.label_zh) || row.label_en;
-
-// Fills every [data-i18n] (text), [data-i18n-aria] (aria-label) element, plus <html lang> and the title.
-export const applyStatic = () => {
-  document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
-  document.title = t("title");
-  for (const el of document.querySelectorAll("[data-i18n]")) el.textContent = t(el.dataset.i18n);
-  for (const el of document.querySelectorAll("[data-i18n-aria]")) el.setAttribute("aria-label", t(el.dataset.i18nAria));
-};
-
-export const setLang = (next) => {
-  if (!(next in LANGS) || next === lang) return;
-  lang = next;
-  try { localStorage.setItem(KEY, next); } catch { /* storage unavailable: still applies for this visit */ }
-  applyStatic();
-  document.dispatchEvent(new Event("exercise:lang"));
-};
+export { LANGS };
+export const { getLang, t, nameOf, labelOf, applyStatic, setLang } = i18n;

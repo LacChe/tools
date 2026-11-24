@@ -4,7 +4,8 @@ import { sb } from "../../auth.js";
 import { state, catalogById } from "./state.js";
 import { t, nameOf, getLang } from "./i18n.js";
 import { pickExercise } from "./picker.js";
-import { today, addDays, parseISO, toDisplayWeight, fmtWeight, fmtDistance, fmtDuration } from "./common.js";
+import { today, addDays, parseISO } from "../../shared/dates.js";
+import { toDisplayWeight, fmtWeight, fmtDistance, fmtDuration } from "./common.js";
 
 const $ = (id) => document.getElementById(id);
 const exName = (e) => nameOf(e) || t("unnamed");

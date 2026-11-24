@@ -1,5 +1,6 @@
 import { sb, requireAuth } from "../../auth.js";
-import { today, fmt, money, catColor } from "./common.js";
+import { today } from "../../shared/dates.js";
+import { fmt, money, catColor } from "./common.js";
 import { t, getLang, setLang, applyStatic, catName, curName, LANGS } from "./i18n.js";
 
 applyStatic();

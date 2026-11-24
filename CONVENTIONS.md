@@ -14,3 +14,5 @@
    - Stylesheet links carry `?v=N`. When `base.css` or `theme.css` changes, give both the same new number on every page (hub, login and all apps). When an app's `style.css` changes, bump that app's own number. This stops a browser from mixing a cached file with a new one.
 9. **Icons** are single SVG files with no hex colors. Strokes use classes `c1` (accent) and `c2` (accent-2). The hub inlines them so they follow the theme.
 10. **User-supplied text** is inserted with `textContent`, never `innerHTML`.
+11. **Shared code lives in `shared/`.** `shared/dates.js` has the local-date helpers; `shared/i18n.js` has the language machinery. Do not copy either into an app.
+12. **Language.** The hub has one saved language (`localStorage` key `hub.lang`), shared by every app. UI text lives in code: each app's `i18n.js` holds its own strings and builds its translator with `createI18n()`; words every app needs (Home, Save, Close, ...) are in `shared/i18n.js` and an app string with the same key overrides them. Text that comes from the database has `_en` / `_zh` columns and is shown with `nameOf` / `labelOf`, never translated in code.
