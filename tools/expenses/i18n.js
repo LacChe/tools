@@ -1,5 +1,5 @@
 // Strings for the expenses app. Words every app shares (Home, Save, Close, ...) live in shared/i18n.js.
-import { LANGS, createI18n } from "../../shared/i18n.js";
+import { createI18n } from "../../shared/i18n.js";
 
 const STR = {
   en: {
@@ -22,10 +22,9 @@ const STR = {
   },
 };
 
-const i18n = createI18n({ strings: STR, event: "expenses:lang", legacyKey: "expenses.lang" });
+const i18n = createI18n({ strings: STR });
 
-export { LANGS };
-export const { getLang, t, applyStatic, setLang } = i18n;
+export const { getLang, t, applyStatic } = i18n;
 // Display names for database rows (lookup tables carry label_en and label_zh).
 export const catName = i18n.labelOf;
 export const curName = i18n.labelOf;

@@ -138,7 +138,6 @@ document.addEventListener("exercise:changed", (ev) => {
   render();
 });
 
-document.addEventListener("exercise:lang", render);
 document.addEventListener("exercise:units", render);
 document.addEventListener("exercise:catalog", render);
 document.addEventListener("exercise:view", (ev) => { if (ev.detail?.view === "history") fillScreen(); });

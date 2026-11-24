@@ -1,5 +1,5 @@
 import { sb, requireAuth } from "../../auth.js";
-import { t, getLang, applyStatic, setLang } from "./i18n.js";
+import { t, getLang, applyStatic } from "./i18n.js";
 import { safeFragment } from "./sanitize.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -122,13 +122,8 @@ function renderLanguage() {
     el.querySelector(".node-label").textContent = field(r, "label");
     el.setAttribute("aria-label", field(r, "title"));
   });
-  $("btnZh").classList.toggle("active", getLang() === "zh");
-  $("btnEn").classList.toggle("active", getLang() === "en");
   if (activeEl) renderPanel(activeEl.dataset.node);
 }
-$("btnZh").addEventListener("click", () => setLang("zh"));
-$("btnEn").addEventListener("click", () => setLang("en"));
-document.addEventListener("wachter:lang", renderLanguage);
 
 function openNode(id) {
   renderPanel(id);

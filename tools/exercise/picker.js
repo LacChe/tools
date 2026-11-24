@@ -56,4 +56,3 @@ $("pickNew").addEventListener("click", () => {
   $("pickOverlay").classList.remove("open");
   openCreate((row) => settle(row));
 });
-document.addEventListener("exercise:lang", () => { if ($("pickOverlay").classList.contains("open")) render(); });

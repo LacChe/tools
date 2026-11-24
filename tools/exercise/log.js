@@ -532,24 +532,6 @@ $("logNext").addEventListener("click", () => load(shiftDate(cur.date, 1)));
 $("logDate").addEventListener("change", () => { if ($("logDate").value) load($("logDate").value); });
 window.addEventListener("hashchange", () => { const d = hashDate(); if (d && d !== cur.date) load(d); });
 
-document.addEventListener("exercise:lang", () => {
-  $("logWeekday").textContent = new Intl.DateTimeFormat(getLang() === "zh" ? "zh-CN" : "en", { weekday: "long" }).format(parseISO(cur.date));
-  render();
-  fillLastTimes(loadSeq);
-  if ($("setOverlay").classList.contains("open") && sf) {
-    $("setTitle").textContent = t(sf.mode === "edit" ? "editSetTitle" : "addSetTitle");
-    $("setInfo").textContent = exName(sf.ex);
-    for (const [m, f] of Object.entries(fields)) {
-      f.wrap.firstChild.textContent = labelFor(m);
-      if (f.toggle) f.toggle.textContent = t("addMetric", { metric: metricName(m) });
-    }
-    const side = $("setSide").value;
-    $("setSide").replaceChildren(new Option(t("sideNone"), ""), new Option(t("sideLeft"), "left"), new Option(t("sideRight"), "right"));
-    $("setSide").value = side;
-    resetArm();
-  }
-  if ($("rtPickOverlay").classList.contains("open")) renderRoutinePick();
-});
 document.addEventListener("exercise:catalog", () => { render(); fillLastTimes(loadSeq); buildDrafts(); });
 document.addEventListener("exercise:routines", () => { buildDrafts(); });
 document.addEventListener("exercise:units", () => { render(); });

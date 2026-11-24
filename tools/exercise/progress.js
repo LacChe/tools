@@ -207,7 +207,6 @@ render();
 
 document.addEventListener("exercise:changed", () => { stale = true; if (!$("progressView").hidden) load(); });
 document.addEventListener("exercise:view", (ev) => { if (ev.detail?.view === "progress" && stale) load(); });
-document.addEventListener("exercise:lang", () => { renderPicker(); render(); });
 document.addEventListener("exercise:units", render);
 document.addEventListener("exercise:catalog", () => {
   if (exercise) exercise = catalogById().get(exercise.id) ?? exercise;

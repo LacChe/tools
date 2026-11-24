@@ -215,16 +215,5 @@ $("rtNew").addEventListener("click", () => openForm(null, "create"));
 for (const id of ["rtSearch", "rtArchived"]) $(id).addEventListener("input", renderList);
 document.addEventListener("exercise:routines", renderList);
 document.addEventListener("exercise:catalog", () => { renderList(); if ($("rtOverlay").classList.contains("open")) renderItems(); });
-document.addEventListener("exercise:lang", () => {
-  $("rtSearch").placeholder = t("search");
-  renderList();
-  if ($("rtOverlay").classList.contains("open")) {
-    $("rtTitle").textContent = t(form.mode === "create" ? "addRoutine" : form.mode === "edit" ? "editRoutine" : "viewRoutine");
-    if (form.mode === "view") $("rtInfo").textContent = t("notYours", { name: form.row.creator?.display_name ?? "?" });
-    if (form.mode === "edit") $("rtArchive").textContent = t(form.row.archived ? "unarchive" : "archive");
-    resetArm();
-    renderItems();
-  }
-});
 $("rtSearch").placeholder = t("search");
 renderList();

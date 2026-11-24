@@ -1,7 +1,7 @@
 import { sb, requireAuth } from "../../auth.js";
 import { today } from "../../shared/dates.js";
 import { fmt, money, catColor } from "./common.js";
-import { t, getLang, setLang, applyStatic, catName, curName, LANGS } from "./i18n.js";
+import { t, applyStatic, catName, curName } from "./i18n.js";
 
 applyStatic();
 await requireAuth();
@@ -96,13 +96,6 @@ const fillSelects = () => {
   ["fCategory", "fCurrency", "sCurrency"].forEach((id, i) => { $(id).value = keep[i]; });
 };
 fillSelects();
-for (const [code, name] of Object.entries(LANGS)) {
-  const o = document.createElement("option");
-  o.value = code;
-  o.textContent = name;
-  $("sLang").append(o);
-}
-$("sLang").value = getLang();
 $("fDate").value = today();
 $("fCurrency").value = defaultCurrency;
 
@@ -374,13 +367,3 @@ $("settingsForm").addEventListener("submit", async (ev) => {
   okTimer = setTimeout(() => { ok.textContent = ""; }, 3000);
 });
 
-// Language ----------------------------------------------------------------
-$("sLang").addEventListener("change", () => setLang($("sLang").value));
-document.addEventListener("expenses:lang", () => {
-  fillSelects();
-  render();
-  updateEnd();
-  resetDelete();
-  if (editing && $("editOverlay").classList.contains("open")) $("editInfo").textContent = `${editing.entry_date} · ${lab(editing.category)} · ${editing.currency}`;
-  $("formOk").textContent = "";
-});
