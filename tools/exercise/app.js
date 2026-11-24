@@ -1,5 +1,5 @@
 import { sb, requireAuth } from "../../auth.js";
-import { t, getLang, setLang, applyStatic, LANGS } from "./i18n.js";
+import { t, applyStatic } from "./i18n.js";
 import { state } from "./state.js";
 import { units, saveUnits } from "./common.js";
 
@@ -75,23 +75,14 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") document.querySelectorAll(".overlay.open").item(document.querySelectorAll(".overlay.open").length - 1)?.classList.remove("open");
 });
 
-// Settings (language only for now; units and display name arrive in step 9)
-for (const [code, name] of Object.entries(LANGS)) {
-  const o = document.createElement("option");
-  o.value = code;
-  o.textContent = name;
-  $("sLang").append(o);
-}
-$("sLang").value = getLang();
+// Settings (the language is chosen in the hub; units and display name live here)
 $("openSettings").addEventListener("click", () => {
-  $("sLang").value = getLang();
   $("sWeight").value = units.weight;
   $("sDist").value = units.distance;
   $("sName").value = state.profile?.display_name ?? "";
   $("sError").textContent = "";
   $("settingsOverlay").classList.add("open");
 });
-$("sLang").addEventListener("change", () => setLang($("sLang").value));
 
 // Units are a per-device display choice: data stays in kg and meters. Other panels close so no form shows stale units.
 const onUnits = () => {

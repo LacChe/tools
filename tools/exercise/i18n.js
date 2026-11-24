@@ -1,5 +1,5 @@
 // Strings for the exercise app. Words every app shares (Home, Save, Close, ...) live in shared/i18n.js.
-import { LANGS, createI18n } from "../../shared/i18n.js";
+import { createI18n } from "../../shared/i18n.js";
 
 const STR = {
   en: {
@@ -86,7 +86,6 @@ const STR = {
   },
 };
 
-const i18n = createI18n({ strings: STR, event: "exercise:lang", legacyKey: "exercise.lang" });
+const i18n = createI18n({ strings: STR });
 
-export { LANGS };
-export const { getLang, t, nameOf, labelOf, applyStatic, setLang } = i18n;
+export const { getLang, t, nameOf, labelOf, applyStatic } = i18n;

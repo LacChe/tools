@@ -281,23 +281,9 @@ export const openCreate = (onSaved) => openForm(null, "create", false, onSaved);
 $("libNew").addEventListener("click", () => openForm(null, "create"));
 for (const id of ["libSearch", "libCat", "libArchived"]) $(id).addEventListener("input", renderList);
 
-const refreshStatic = () => {
-  $("libSearch").placeholder = t("search");
-  fillCategorySelects();
-  labelChecks();
-  if ($("exOverlay").classList.contains("open")) {
-    const keepParent = $("exParent").value;
-    fillParents(keepParent ? Number(keepParent) : null, form.row?.id ?? null, form.mode === "edit" && state.catalog.some((e) => e.parent_id === form.row.id));
-    syncMetrics();
-    $("exTitle").textContent = t(form.mode === "create" ? "addExercise" : form.mode === "edit" ? "editExercise" : "viewExercise");
-    if (form.mode === "view") $("exInfo").textContent = t("notYours", { name: form.row.creator?.display_name ?? "?" });
-    if (form.mode === "edit") $("exArchive").textContent = t(form.row.archived ? "unarchive" : "archive");
-    resetArm();
-  }
-  renderList();
-};
-
 buildChecks();
-refreshStatic();
-document.addEventListener("exercise:lang", refreshStatic);
+$("libSearch").placeholder = t("search");
+fillCategorySelects();
+labelChecks();
+renderList();
 document.addEventListener("exercise:catalog", renderList);

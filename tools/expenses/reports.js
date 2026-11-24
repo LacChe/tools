@@ -293,7 +293,6 @@ $("rCurrency").addEventListener("change", update);
 // Records changed (add / edit / delete): refresh in the background so Reports is already current when opened.
 document.addEventListener("expenses:changed", update);
 const redraw = () => { if (last) draw(...last); };
-document.addEventListener("expenses:lang", redraw);
 document.addEventListener("expenses:view", redraw); // the donut gap is measured in pixels, so redraw once visible
 
 limits();

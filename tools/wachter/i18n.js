@@ -1,6 +1,6 @@
 // Strings for the Wachter app. Words every app shares (Home, Close, Loading, ...) live in shared/i18n.js.
 // The entries themselves (labels, titles, bodies) come from the database with _en / _zh columns.
-import { LANGS, createI18n } from "../../shared/i18n.js";
+import { createI18n } from "../../shared/i18n.js";
 
 const STR = {
   en: {
@@ -29,7 +29,6 @@ const STR = {
   },
 };
 
-const i18n = createI18n({ strings: STR, event: "wachter:lang" });
+const i18n = createI18n({ strings: STR });
 
-export { LANGS };
-export const { getLang, t, applyStatic, setLang } = i18n;
+export const { getLang, t, applyStatic } = i18n;
