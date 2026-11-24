@@ -7,9 +7,10 @@
    - Small lookup lists (categories, currencies) are tables with a text key, `label_en` and `sort_order`.
 3. **Access is per app, and is data.** Table `hub_app_access (user_id, app_id)` says who may use which app. Row-level security on every app table calls `public.hub_has_access('<id>')`. Never put user ids in policies.
 4. **Row-level security is mandatory** on every table. Only the publishable Supabase key ships in the browser.
-5. **CSS uses variables only.** No hex, `rgb()` or `rgba()` outside the `:root` token block in `base.css`. For translucent colors use `color-mix(in srgb, var(--token) N%, transparent)`.
+5. **CSS uses variables only.** No hex, `rgb()` or `rgba()` outside the token blocks: the `:root` block in `base.css` (shared tokens) and the `:root[data-app="..."]` blocks in `theme.css` (tokens only one app uses, such as the expense `--cat-*` colors). For translucent colors use `color-mix(in srgb, var(--token) N%, transparent)`.
 6. **Load order on every page:** `base.css`, then `theme.css`, then the app's own `style.css`.
 7. **Every page sets `<html data-app="<id>">`.** This lets `theme.css` restyle one app: `:root[data-app="expenses"] { --accent: ...; }`.
-8. **Shared UI pieces live in `base.css`.** An app's own stylesheet holds only what is specific to that app.
+8. **Shared UI pieces live in `base.css`.** An app's own stylesheet holds only what is specific to that app. When a second app needs a rule, move it to `base.css` then, not before.
+   - Stylesheet links carry `?v=N`. When `base.css` or `theme.css` changes, give both the same new number on every page (hub, login and all apps). When an app's `style.css` changes, bump that app's own number. This stops a browser from mixing a cached file with a new one.
 9. **Icons** are single SVG files with no hex colors. Strokes use classes `c1` (accent) and `c2` (accent-2). The hub inlines them so they follow the theme.
 10. **User-supplied text** is inserted with `textContent`, never `innerHTML`.
