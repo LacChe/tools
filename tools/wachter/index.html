@@ -7,13 +7,13 @@
   <title>Practice Dependency Web / 练习依赖关系图</title>
   <link rel="stylesheet" href="../../base.css?v=5">
   <link rel="stylesheet" href="../../theme.css?v=5">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 <div class="wrap" id="app" hidden>
   <div class="top-row">
     <div>
-      <h1 data-i18n="h1">Practice Dependency Web</h1>
+      <h1 data-i18n="title">Practice Dependency Web</h1>
       <div class="subtitle" data-i18n="subtitle"></div>
     </div>
     <div class="actions">
@@ -33,7 +33,7 @@
   </div>
   <div class="diagram-frame thin-scroll" id="frame">
     <div class="canvas" id="canvas">
-      <svg class="edge-svg" id="edges" viewBox="0 0 2030 1740" xmlns="http://www.w3.org/2000/svg"></svg>
+      <svg class="edge-svg" id="edges" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
   </div>
   <div class="footnote" data-i18n="footnote"></div>
@@ -46,13 +46,13 @@
         <div class="panel-book" id="panelBook"></div>
         <h2 class="panel-title" id="panelTitle"></h2>
       </div>
-      <button type="button" class="panel-close" id="panelClose" aria-label="Close">×</button>
+      <button type="button" class="panel-close" id="panelClose" aria-label="Close" data-i18n-aria="close">×</button>
     </div>
     <div class="panel-body" id="panelBody"></div>
   </div>
 </div>
-<p class="status" id="status" role="status">Loading…</p>
+<p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
 
-<script type="module" src="app.js"></script>
+<script type="module" src="app.js?v=2"></script>
 </body>
 </html>
