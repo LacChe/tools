@@ -1,0 +1,66 @@
+// Web Push for the hub: ask permission, subscribe this device, and save the subscription in hub_push_subscriptions.
+// No user-facing text here: functions return a state or throw, and hub.js turns that into words (hub-i18n.js).
+import { sb } from "./auth.js";
+
+// Public VAPID key (safe to ship); the private half stays in Supabase. While this is empty, push counts as not set up
+// and the hub hides the Notifications section.
+const VAPID_PUBLIC_KEY = "BPqoOUKUwDE4VDSUIhVzxs7wAurfCOD1P8gnRNF-JY6AWbLmT7KpKFuL2iZOSbXlCKcSlYGJDjwW9VMNRPDUQV0";
+
+const SW_URL = new URL("sw.js", import.meta.url).href;
+const SCOPE_URL = new URL("./", import.meta.url).href;
+
+// iPhone and iPad only allow push from the Home Screen icon, not from a Safari tab.
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isInstalled = () => navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+
+const keyToBytes = (b64url) => {
+  const b64 = (b64url + "=".repeat((4 - (b64url.length % 4)) % 4)).replace(/-/g, "+").replace(/_/g, "/");
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+};
+
+const currentSubscription = async () => {
+  const reg = await navigator.serviceWorker.getRegistration(SCOPE_URL);
+  return reg ? reg.pushManager.getSubscription() : null;
+};
+
+// "unconfigured" | "needs-install" | "unsupported" | "denied" | "off" | "on"
+export async function getState() {
+  if (!VAPID_PUBLIC_KEY) return "unconfigured";
+  if (isIOS() && !isInstalled()) return "needs-install";
+  if (!("serviceWorker" in navigator && "PushManager" in window && "Notification" in window)) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  return (await currentSubscription()) && Notification.permission === "granted" ? "on" : "off";
+}
+
+// Must run straight from a tap: Safari only shows the permission prompt for a user gesture.
+export async function enable() {
+  if ((await Notification.requestPermission()) !== "granted") return getState();
+  await navigator.serviceWorker.register(SW_URL, { scope: SCOPE_URL });
+  const reg = await navigator.serviceWorker.ready;
+  const sub = (await reg.pushManager.getSubscription())
+    ?? (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyToBytes(VAPID_PUBLIC_KEY) }));
+  const { endpoint, keys } = sub.toJSON();
+  const { error } = await sb.from("hub_push_subscriptions").upsert({ endpoint, p256dh: keys.p256dh, auth_secret: keys.auth });
+  if (error) throw new Error(error.message);
+  return getState();
+}
+
+export async function disable() {
+  const sub = await currentSubscription();
+  if (sub) {
+    const { error } = await sb.from("hub_push_subscriptions").delete().eq("endpoint", sub.endpoint);
+    if (error) throw new Error(error.message);
+    await sub.unsubscribe();
+  }
+  return getState();
+}
+
+// Asks the send-push function to push a message to this user's own devices. Resolves to { sent }.
+export async function sendTest(title, body) {
+  const { data, error } = await sb.functions.invoke("send-push", { body: { title, body } });
+  if (error) {
+    // A failed call only says "non-2xx"; the function's own message is in the response body.
+    throw new Error(await error.context?.json?.().then((j) => j.error).catch(() => null) ?? error.message);
+  }
+  return data;
+}
