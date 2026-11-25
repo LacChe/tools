@@ -50,7 +50,7 @@ button, .btn {
 
 /* Header bar variants the apps use: Home on the left, title in the middle, an icon button on the right. */
 .bar-centered h1 { flex: 1; text-align: center; }
-.bar .btn { display: inline-flex; align-items: center; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .bar-icon { width: 44px; padding: 0; font-size: 20px; }
 
 .grid {
