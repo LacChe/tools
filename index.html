@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <title>Tools</title>
   <link rel="stylesheet" href="base.css?v=5">
   <link rel="stylesheet" href="theme.css?v=5">
@@ -26,10 +28,17 @@
         <label class="field"><span data-i18n="language">Language</span>
           <select id="sLang"></select>
         </label>
+        <!-- Notifications: shown by hub.js only when push is set up (push.js). Direct children of the form so they get its spacing. -->
+        <h3 class="sec-title" data-push hidden data-i18n="notifications">Notifications</h3>
+        <p class="edit-info" id="pushStatus" data-push hidden role="status"></p>
+        <button type="button" id="pushToggle" data-push hidden></button>
+        <button type="button" id="pushTest" hidden data-i18n="pushTest">Send test notification</button>
+        <p class="success" id="pushOk" data-push hidden role="status"></p>
+        <p class="error" id="pushError" data-push hidden role="alert"></p>
         <button type="button" id="signout" data-i18n="signOut">Sign out</button>
       </form>
     </div>
   </div>
-  <script type="module" src="hub.js?v=1"></script>
+  <script type="module" src="hub.js?v=2"></script>
 </body>
 </html>
