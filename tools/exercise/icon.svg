@@ -1,6 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke-width="2.4" stroke-linecap="round">
-  <g class="c1">
-    <path d="M6 20 V28 M11 16 V32 M42 20 V28 M37 16 V32"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <style>
+    .c1 { stroke: var(--accent, #c9a24b); }
+    .c2 { stroke: var(--accent-2, #4f9d8a); }
+    .t1 { fill: color-mix(in srgb, var(--accent, #c9a24b) 24%, transparent); }
+    .t2 { fill: color-mix(in srgb, var(--accent-2, #4f9d8a) 24%, transparent); }
+  </style>
+  <g transform="translate(24 24) rotate(-35) scale(.92) translate(-24 -24)">
+    <path class="c1" d="M9 24 H39"/>
+    <rect class="c1 t1" x="11" y="12" width="6" height="24" rx="2.6"/>
+    <rect class="c1 t1" x="31" y="12" width="6" height="24" rx="2.6"/>
+    <rect class="c2 t2" x="4.5" y="17" width="5" height="14" rx="2.2"/>
+    <rect class="c2 t2" x="38.5" y="17" width="5" height="14" rx="2.2"/>
   </g>
-  <path class="c2" d="M11 24 H37"/>
 </svg>

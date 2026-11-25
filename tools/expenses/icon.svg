@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke-width="2.4" stroke-linecap="round">
-  <g class="c1">
-    <path d="M8 14 H36 C38 14 40 16 40 18 V38 C40 40 38 42 36 42 H12 C9.8 42 8 40.2 8 38 Z"/>
-    <path d="M8 14 L30 6 V14"/>
-  </g>
-  <circle class="c2" cx="31" cy="28" r="4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <style>
+    .c1 { stroke: var(--accent, #c9a24b); }
+    .c2 { stroke: var(--accent-2, #4f9d8a); }
+    .t1 { fill: color-mix(in srgb, var(--accent, #c9a24b) 24%, transparent); }
+    .t2 { fill: color-mix(in srgb, var(--accent-2, #4f9d8a) 24%, transparent); }
+  </style>
+  <path class="c1 t1" d="M8 14 H36 C38 14 40 16 40 18 V38 C40 40 38 42 36 42 H12 C9.8 42 8 40.2 8 38 Z"/>
+  <path class="c1" d="M8 14 L30 6 V14"/>
+  <circle class="c2 t2" cx="31" cy="28" r="4"/>
 </svg>
