@@ -45,7 +45,12 @@ export async function requireAuth() {
 }
 
 export async function signOut() {
-  await sb.auth.signOut();
+  // "local" ends only this device's session. The default would end every device's, so signing out in one browser
+  // broke the others ("Not signed in").
+  const { error } = await sb.auth.signOut({ scope: "local" });
+  // If the server could not be reached, the library keeps the saved sign-in and the login page would send you
+  // straight back in. Drop it here instead.
+  if (error) localStorage.removeItem(sb.auth.storageKey);
   goLogin();
 }
 
