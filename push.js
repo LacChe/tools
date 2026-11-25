@@ -4,7 +4,7 @@ import { sb } from "./auth.js";
 
 // Public VAPID key (safe to ship); the private half stays in Supabase. While this is empty, push counts as not set up
 // and the hub hides the Notifications section.
-const VAPID_PUBLIC_KEY = "";
+const VAPID_PUBLIC_KEY = "BPqoOUKUwDE4VDSUIhVzxs7wAurfCOD1P8gnRNF-JY6AWbLmT7KpKFuL2iZOSbXlCKcSlYGJDjwW9VMNRPDUQV0";
 
 const SW_URL = new URL("sw.js", import.meta.url).href;
 const SCOPE_URL = new URL("./", import.meta.url).href;
