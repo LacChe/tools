@@ -5,6 +5,10 @@ const STR = {
   en: {
     title: "Tools", signOut: "Sign out", signIn: "Sign in", email: "Email", password: "Password",
     notifications: "Notifications",
+    oldPasswordInfo: "Your password has changed. Enter the previous one once to keep your Cycle entries.",
+    oldPassword: "Previous password", unlock: "Unlock", continueWithoutCycle: "Continue without Cycle",
+    wrongOldPassword: "That password does not open your Cycle entries.",
+    cycleFail: "Signed in, but Cycle could not be set up: {msg}",
     pushEnable: "Enable notifications", pushDisable: "Turn off notifications", pushTest: "Send test notification",
     pushStateOn: "Notifications are on for this device.",
     pushStateOff: "Notifications are off for this device.",
@@ -19,6 +23,10 @@ const STR = {
   zh: {
     title: "工具", signOut: "退出登录", signIn: "登录", email: "邮箱", password: "密码",
     notifications: "通知",
+    oldPasswordInfo: "密码已更改。请输入一次旧密码，以保留“周期”记录。",
+    oldPassword: "旧密码", unlock: "解锁", continueWithoutCycle: "暂不使用“周期”",
+    wrongOldPassword: "该密码无法打开“周期”记录。",
+    cycleFail: "已登录，但无法设置“周期”：{msg}",
     pushEnable: "开启通知", pushDisable: "关闭通知", pushTest: "发送测试通知",
     pushStateOn: "此设备已开启通知。",
     pushStateOff: "此设备未开启通知。",

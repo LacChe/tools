@@ -1,4 +1,5 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm";
+import { clearKeys } from "./shared/cycle-keys.js";
 
 // Publishable key: safe to ship. Access is enforced by row-level security.
 const SUPABASE_URL = "https://ystddrpqrtduvfwsdvft.supabase.co";
@@ -45,6 +46,8 @@ export async function requireAuth() {
 }
 
 export async function signOut() {
+  // The login page clears these too, which covers automatic sign-outs.
+  await clearKeys();
   // "local" ends only this device's session. The default would end every device's, so signing out in one browser
   // broke the others ("Not signed in").
   const { error } = await sb.auth.signOut({ scope: "local" });
