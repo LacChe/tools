@@ -89,7 +89,7 @@ export function renderSpiral(box, entries, today, onPick) {
     path.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onPick(date); } });
   }
 
-  // Forecast: faint outlines, then the band of possible start days, then the usual period length fading out.
+  // Forecast: faint outlines, then the band of possible start days.
   if (info.forecast) {
     const first = daysBetween(today, info.forecast.earliest);
     const last = daysBetween(today, info.forecast.latest);
@@ -107,13 +107,6 @@ export function renderSpiral(box, entries, today, onPick) {
         ? shortDate(info.forecast.earliest) : `${shortDate(info.forecast.earliest)} – ${shortDate(info.forecast.latest)}`;
       svg.append(...arcText(step, start - 0.5, last + 0.5, text));
       furthest = last;
-    }
-    for (let i = 1; i < info.periodLength; i++) {
-      const k = last + i;
-      if (k < 1) continue;
-      const path = add(band(step, k - 0.5, k + 0.5, flat), { class: "expected-day" });
-      path.style.opacity = String(0.45 * (1 - (i - 1) / info.periodLength));
-      furthest = k;
     }
   }
 

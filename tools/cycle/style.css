@@ -41,7 +41,6 @@ form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
 .spiral .day:focus-visible { outline: none; stroke: var(--text); stroke-width: 3; }
 .future { fill: none; stroke-width: 2; opacity: 0.5; }
 .expected { fill: color-mix(in srgb, var(--cycle-bleed) 22%, transparent); stroke: var(--cycle-bleed); stroke-width: 2.5; }
-.expected-day { fill: var(--cycle-bleed); }
 .expected-text { fill: var(--text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .centre-day { fill: var(--text); font-size: 44px; text-anchor: middle; }
 .centre-date { fill: var(--muted); font-size: 24px; text-anchor: middle; }
