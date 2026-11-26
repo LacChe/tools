@@ -16,8 +16,8 @@
     <header class="bar bar-centered">
       <a class="btn" href="../../index.html" data-i18n="home">Home</a>
       <h1 data-i18n="title">Cycle</h1>
-      <!-- Where other apps have their settings button. -->
-      <button type="button" class="bar-icon" id="openLegend" aria-label="Legend" data-i18n-aria="legend">ⓘ</button>
+      <!-- Holds the place of the settings button other apps have, so the title lines up with theirs. -->
+      <span class="bar-icon" aria-hidden="true"></span>
     </header>
 
     <nav class="view-toggle" aria-label="View" data-i18n-aria="view">
@@ -54,15 +54,6 @@
     <div id="detailsView" hidden></div>
     <p class="error" id="readError" role="alert" hidden></p>
   </main>
-  <div class="overlay" id="legendOverlay">
-    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="legendTitle">
-      <div class="panel-header">
-        <h2 class="panel-title" id="legendTitle" data-i18n="legend">Legend</h2>
-        <button type="button" class="panel-close" id="legendClose" aria-label="Close" data-i18n-aria="close">×</button>
-      </div>
-      <div id="legend"></div>
-    </div>
-  </div>
   <div class="overlay" id="dayOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
       <div class="day-nav">

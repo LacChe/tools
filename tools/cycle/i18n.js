@@ -4,9 +4,8 @@ import { createI18n } from "../../shared/i18n.js";
 
 const STR = {
   en: {
-    title: "Cycle", spiral: "Cycle spiral", legend: "Legend", cycleDay: "Day {n}", prevDay: "Previous day", nextDay: "Next day",
-    firstUse: "Add the days of your past periods to start.", logged: "Logged", unlogged: "Not logged",
-    legend_mild: "Mild pain", legend_moderate: "Moderate pain", legend_severe: "Severe pain",
+    title: "Cycle", spiral: "Cycle spiral", cycleDay: "Day {n}", prevDay: "Previous day", nextDay: "Next day",
+    firstUse: "Add the days of your past periods to start.",
     log: "Log", details: "Details",
     lastCycle: "Last cycle", lastPeriod: "Last period", typical: "Your typical period", past: "Past cycles",
     typicalNote: "Height: usual flow. Shade: usual pain.", pastNote: "Start date and days in each cycle. Outlined days are not logged.",
@@ -20,9 +19,8 @@ const STR = {
     unreadable: "Entries that could not be read: {n}",
   },
   zh: {
-    title: "周期", spiral: "周期螺旋图", legend: "图例", cycleDay: "第{n}天", prevDay: "前一天", nextDay: "后一天",
-    firstUse: "请先补记过往经期的日子。", logged: "已记录", unlogged: "未记录",
-    legend_mild: "轻度疼痛", legend_moderate: "中度疼痛", legend_severe: "重度疼痛",
+    title: "周期", spiral: "周期螺旋图", cycleDay: "第{n}天", prevDay: "前一天", nextDay: "后一天",
+    firstUse: "请先补记过往经期的日子。",
     log: "记录", details: "详情",
     lastCycle: "上次周期", lastPeriod: "上次经期", typical: "典型经期", past: "过往周期",
     typicalNote: "高度：通常经量。深浅：通常疼痛。", pastNote: "开始日期与每个周期的天数。描边的日子未记录。",

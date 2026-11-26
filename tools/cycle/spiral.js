@@ -162,32 +162,3 @@ function arcText(step, a, b, text) {
   label.append(along);
   return [guide, label];
 }
-
-// Under the spiral: shape means bleeding, shade means pain.
-export function renderLegend(box) {
-  const sample = (level, color, outlined) => {
-    const svg = svgEl("svg", { viewBox: "0 0 40 56", "aria-hidden": "true" });
-    const x = (i) => 2 + 36 * (i / 40);
-    const top = Array.from({ length: 41 }, (_, i) => `${x(i)} ${54 - height(level, level, level, i / 40)}`);
-    const path = svgEl("path", { d: `M${top.join("L")}L38 54L2 54Z` });
-    path.style.fill = outlined ? `color-mix(in srgb, ${color} 48%, transparent)` : color;
-    if (outlined) Object.assign(path.style, { stroke: color, strokeWidth: "2.5" });
-    svg.append(path);
-    return svg;
-  };
-  const item = (svg, label) => {
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    span.textContent = label;
-    li.append(svg, span);
-    return li;
-  };
-  const row = (items) => { const ul = document.createElement("ul"); ul.className = "legend"; ul.append(...items); return ul; };
-  const quiet = "var(--cycle-between-1)";
-  const shade = (pain) => dayColor({ flow: "none", pain }, 7, 28, 5);
-  box.replaceChildren(
-    row(FLOWS.slice(1).map((f, i) => item(sample(i + 1, "var(--cycle-bleed)"), t(`flow_${f}`)))),
-    row(["mild", "moderate", "severe"].map((p) => item(sample(0, shade(p)), t(`legend_${p}`)))),
-    row([item(sample(0, quiet), t("logged")), item(sample(0, quiet, true), t("unlogged"))]),
-  );
-}

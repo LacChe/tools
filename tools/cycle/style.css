@@ -46,10 +46,6 @@ form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
 .expected-text { fill: var(--text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .centre-day { fill: var(--text); font-size: 44px; text-anchor: middle; }
 .centre-date { fill: var(--muted); font-size: 24px; text-anchor: middle; }
-.legend:first-child { margin-top: 0; }
-.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 8px 0 0; padding: 0; list-style: none; }
-.legend li { display: flex; align-items: flex-end; gap: 6px; font-size: 12px; color: var(--muted); }
-.legend svg { width: 20px; height: 28px; }
 
 /* Day panel */
 .day-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
