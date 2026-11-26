@@ -18,27 +18,82 @@
       <input id="email" type="email" autocomplete="username" placeholder="Email" data-i18n-placeholder="email" required>
       <input id="password" type="password" autocomplete="current-password" placeholder="Password" data-i18n-placeholder="password" required>
       <p class="error" id="error" role="alert"></p>
-      <button type="submit" data-i18n="signIn">Sign in</button>
+      <button type="submit" id="submit" data-i18n="signIn">Sign in</button>
     </form>
+    <!-- Cycle only: shown when the password has changed, or its keys could not be set up. A div, because
+         form.stack would override "hidden". -->
+    <div id="cycleStep" hidden>
+      <div id="oldBox" hidden>
+        <form class="stack" id="oldForm">
+          <p class="edit-info" data-i18n="oldPasswordInfo"></p>
+          <input id="oldPassword" type="password" autocomplete="off" placeholder="Previous password" data-i18n-placeholder="oldPassword" required>
+          <button type="submit" id="oldSubmit" data-i18n="unlock">Unlock</button>
+        </form>
+      </div>
+      <p class="error" id="cycleError" role="alert"></p>
+      <button type="button" id="skip" data-i18n="continueWithoutCycle">Continue without Cycle</button>
+    </div>
   </main>
   <script type="module">
     import { sb, HOME_URL } from "./auth.js";
     import { t, applyStatic } from "./hub-i18n.js";
+    import { clearKeys, setUpKeys, rewrapKeys } from "./shared/cycle-keys.js";
     applyStatic();
     document.title = t("signIn");
-    const { data } = await sb.auth.getSession();
-    if (data.session) location.replace(HOME_URL);
-    document.getElementById("form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const err = document.getElementById("error");
-      err.textContent = "";
-      const { error } = await sb.auth.signInWithPassword({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-      });
-      if (error) err.textContent = error.message;
-      else location.replace(HOME_URL);
+    const $ = (id) => document.getElementById(id);
+    const goHome = () => location.replace(HOME_URL);
+
+    // No session means signed out, however that happened: drop the cycle keys. A new sign-in waits for this.
+    // Offline with an expired token also reports no session, but the saved sign-in survives: keep the keys then.
+    const start = sb.auth.getSession().then(({ data, error }) => {
+      if (data.session) return goHome();
+      if (error?.name !== "AuthRetryableFetchError") return clearKeys();
     });
+
+    let signedIn = null; // { userId, password }, kept only while the old password is being asked for
+    const showCycleStep = (needsOld, message = "") => {
+      $("form").hidden = true;
+      $("form").style.display = "none";
+      $("cycleStep").hidden = false;
+      $("oldBox").hidden = !needsOld;
+      $("cycleError").textContent = message;
+    };
+
+    $("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await start;
+      $("error").textContent = "";
+      $("submit").disabled = true;
+      const password = $("password").value;
+      const { data, error } = await sb.auth.signInWithPassword({ email: $("email").value, password });
+      if (error) {
+        $("error").textContent = error.message;
+        $("submit").disabled = false;
+        return;
+      }
+      // Whatever happens to the cycle keys, the other tools stay reachable.
+      try {
+        signedIn = { userId: data.user.id, password };
+        if ((await setUpKeys(sb, signedIn.userId, password)) === "old-password") showCycleStep(true);
+        else goHome();
+      } catch (err) {
+        showCycleStep(false, t("cycleFail", { msg: err.message }));
+      }
+    });
+
+    $("oldForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("cycleError").textContent = "";
+      $("oldSubmit").disabled = true;
+      try {
+        if (await rewrapKeys(sb, signedIn.userId, $("oldPassword").value, signedIn.password)) return goHome();
+        $("cycleError").textContent = t("wrongOldPassword");
+      } catch (err) {
+        $("cycleError").textContent = t("cycleFail", { msg: err.message });
+      }
+      $("oldSubmit").disabled = false;
+    });
+    $("skip").addEventListener("click", goHome);
   </script>
 </body>
 </html>
