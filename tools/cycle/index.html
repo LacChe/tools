@@ -6,8 +6,9 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <title>Cycle</title>
-  <link rel="stylesheet" href="../../base.css?v=7">
-  <link rel="stylesheet" href="../../theme.css?v=7">
+  <link rel="stylesheet" href="../../base.css?v=8">
+  <link rel="stylesheet" href="../../theme.css?v=8">
+  <link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -18,8 +19,27 @@
       <!-- Holds the place of the settings button other apps have, so the title lines up with theirs. -->
       <span class="bar-icon" aria-hidden="true"></span>
     </header>
-    <p class="empty" data-i18n="empty">Nothing here yet.</p>
+
+    <form class="stack compact" id="entryForm" novalidate>
+      <label class="field"><span data-i18n="date">Date</span>
+        <input type="date" id="fDate" required>
+      </label>
+      <div class="field"><span data-i18n="flow">Flow</span>
+        <div class="segmented" id="fFlow" role="group" aria-label="Flow" data-i18n-aria="flow"></div>
+      </div>
+      <div class="field"><span data-i18n="pain">Pain</span>
+        <div class="segmented" id="fPain" role="group" aria-label="Pain" data-i18n-aria="pain"></div>
+      </div>
+      <label class="field"><span data-i18n="note">Note</span>
+        <input type="text" id="fNote" maxlength="500" autocomplete="off">
+      </label>
+      <button type="submit" id="saveBtn" data-i18n="save">Save</button>
+      <button type="button" class="danger-btn" id="clearBtn" data-i18n="clearDay" hidden>Clear day</button>
+      <p class="error" id="formError" role="alert"></p>
+      <p class="success" id="formOk" role="status"></p>
+    </form>
+    <p class="error" id="readError" role="alert" hidden></p>
   </main>
-  <script type="module" src="app.js?v=2"></script>
+  <script type="module" src="app.js?v=3"></script>
 </body>
 </html>
