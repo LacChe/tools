@@ -180,6 +180,31 @@ $$;
 ALTER FUNCTION "public"."rls_auto_enable"() OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."cycle_entries" (
+    "user_id" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "day_key" "text" NOT NULL,
+    "iv" "text" NOT NULL,
+    "ciphertext" "text" NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."cycle_entries" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."cycle_keys" (
+    "user_id" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "password_salt" "text" NOT NULL,
+    "iterations" integer NOT NULL,
+    "password_wrapped" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "cycle_keys_iterations_check" CHECK (("iterations" >= 600000))
+);
+
+
+ALTER TABLE "public"."cycle_keys" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."exercise_catalog" (
     "id" bigint NOT NULL,
     "created_by" "uuid" DEFAULT "auth"."uid"(),
@@ -353,6 +378,17 @@ CREATE TABLE IF NOT EXISTS "public"."hub_profiles" (
 ALTER TABLE "public"."hub_profiles" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."hub_push_subscriptions" (
+    "endpoint" "text" NOT NULL,
+    "user_id" "uuid" DEFAULT "auth"."uid"() NOT NULL,
+    "p256dh" "text" NOT NULL,
+    "auth_secret" "text" NOT NULL
+);
+
+
+ALTER TABLE "public"."hub_push_subscriptions" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."wachter_items" (
     "id" integer NOT NULL,
     "book" "text" NOT NULL,
@@ -381,6 +417,16 @@ CREATE TABLE IF NOT EXISTS "public"."wachter_links" (
 
 
 ALTER TABLE "public"."wachter_links" OWNER TO "postgres";
+
+
+ALTER TABLE ONLY "public"."cycle_entries"
+    ADD CONSTRAINT "cycle_entries_pkey" PRIMARY KEY ("user_id", "day_key");
+
+
+
+ALTER TABLE ONLY "public"."cycle_keys"
+    ADD CONSTRAINT "cycle_keys_pkey" PRIMARY KEY ("user_id");
+
 
 
 ALTER TABLE ONLY "public"."exercise_catalog"
@@ -478,6 +524,11 @@ ALTER TABLE ONLY "public"."hub_profiles"
 
 
 
+ALTER TABLE ONLY "public"."hub_push_subscriptions"
+    ADD CONSTRAINT "hub_push_subscriptions_pkey" PRIMARY KEY ("endpoint");
+
+
+
 ALTER TABLE ONLY "public"."wachter_items"
     ADD CONSTRAINT "wachter_items_pkey" PRIMARY KEY ("id");
 
@@ -489,6 +540,16 @@ ALTER TABLE ONLY "public"."wachter_links"
 
 
 CREATE INDEX "exercise_sets_user_exercise_idx" ON "public"."exercise_sets" USING "btree" ("user_id", "exercise_id");
+
+
+
+ALTER TABLE ONLY "public"."cycle_entries"
+    ADD CONSTRAINT "cycle_entries_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."cycle_keys"
+    ADD CONSTRAINT "cycle_keys_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
 
@@ -567,6 +628,11 @@ ALTER TABLE ONLY "public"."hub_profiles"
 
 
 
+ALTER TABLE ONLY "public"."hub_push_subscriptions"
+    ADD CONSTRAINT "hub_push_subscriptions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."wachter_links"
     ADD CONSTRAINT "wachter_links_from_id_fkey" FOREIGN KEY ("from_id") REFERENCES "public"."wachter_items"("id");
 
@@ -574,6 +640,20 @@ ALTER TABLE ONLY "public"."wachter_links"
 
 ALTER TABLE ONLY "public"."wachter_links"
     ADD CONSTRAINT "wachter_links_to_id_fkey" FOREIGN KEY ("to_id") REFERENCES "public"."wachter_items"("id");
+
+
+
+ALTER TABLE "public"."cycle_entries" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "cycle_entries_own" ON "public"."cycle_entries" TO "authenticated" USING ((("user_id" = "auth"."uid"()) AND "public"."hub_has_access"('cycle'::"text"))) WITH CHECK ((("user_id" = "auth"."uid"()) AND "public"."hub_has_access"('cycle'::"text")));
+
+
+
+ALTER TABLE "public"."cycle_keys" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "cycle_keys_own" ON "public"."cycle_keys" TO "authenticated" USING ((("user_id" = "auth"."uid"()) AND "public"."hub_has_access"('cycle'::"text"))) WITH CHECK ((("user_id" = "auth"."uid"()) AND "public"."hub_has_access"('cycle'::"text")));
 
 
 
@@ -684,17 +764,24 @@ CREATE POLICY "hub_profiles_update_own" ON "public"."hub_profiles" FOR UPDATE US
 
 
 
+ALTER TABLE "public"."hub_push_subscriptions" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "hub_push_subscriptions_own" ON "public"."hub_push_subscriptions" TO "authenticated" USING (("user_id" = "auth"."uid"())) WITH CHECK (("user_id" = "auth"."uid"()));
+
+
+
 ALTER TABLE "public"."wachter_items" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "wachter_items_access" ON "public"."wachter_items" TO "authenticated" USING ("public"."hub_has_access"('wachter'::"text")) WITH CHECK ("public"."hub_has_access"('wachter'::"text"));
+CREATE POLICY "wachter_items_read" ON "public"."wachter_items" FOR SELECT TO "authenticated" USING ("public"."hub_has_access"('wachter'::"text"));
 
 
 
 ALTER TABLE "public"."wachter_links" ENABLE ROW LEVEL SECURITY;
 
 
-CREATE POLICY "wachter_links_access" ON "public"."wachter_links" TO "authenticated" USING ("public"."hub_has_access"('wachter'::"text")) WITH CHECK ("public"."hub_has_access"('wachter'::"text"));
+CREATE POLICY "wachter_links_read" ON "public"."wachter_links" FOR SELECT TO "authenticated" USING ("public"."hub_has_access"('wachter'::"text"));
 
 
 
@@ -731,6 +818,18 @@ GRANT ALL ON FUNCTION "public"."expenses_add_entry"("p_entry_date" "date", "p_ca
 
 REVOKE ALL ON FUNCTION "public"."hub_has_access"("p_app_id" "text") FROM PUBLIC;
 GRANT ALL ON FUNCTION "public"."hub_has_access"("p_app_id" "text") TO "authenticated";
+
+
+
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."cycle_entries" TO "anon";
+GRANT ALL ON TABLE "public"."cycle_entries" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."cycle_entries" TO "service_role";
+
+
+
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."cycle_keys" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,TRIGGER,TRUNCATE,MAINTAIN,UPDATE ON TABLE "public"."cycle_keys" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."cycle_keys" TO "service_role";
 
 
 
@@ -788,12 +887,18 @@ GRANT UPDATE("display_name") ON TABLE "public"."hub_profiles" TO "authenticated"
 
 
 
-GRANT SELECT,INSERT,DELETE,MAINTAIN,UPDATE ON TABLE "public"."wachter_items" TO "authenticated";
+GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."hub_push_subscriptions" TO "anon";
+GRANT ALL ON TABLE "public"."hub_push_subscriptions" TO "authenticated";
+GRANT SELECT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."hub_push_subscriptions" TO "service_role";
+
+
+
+GRANT SELECT,MAINTAIN ON TABLE "public"."wachter_items" TO "authenticated";
 GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."wachter_items" TO "service_role";
 
 
 
-GRANT SELECT,INSERT,DELETE,MAINTAIN,UPDATE ON TABLE "public"."wachter_links" TO "authenticated";
+GRANT SELECT,MAINTAIN ON TABLE "public"."wachter_links" TO "authenticated";
 GRANT REFERENCES,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."wachter_links" TO "service_role";
 
 
