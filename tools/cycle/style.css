@@ -11,7 +11,6 @@ form.stack .segmented button[aria-pressed="true"] { background: var(--surface-ho
 
 form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
 form.stack [hidden] { display: none; }
-form.stack input[type="date"] { width: 100%; }
 
 /* Log / Details: two small centred buttons. */
 .view-toggle { justify-content: center; gap: 8px; margin-bottom: 12px; }
@@ -42,7 +41,6 @@ form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
 .spiral .day:focus-visible { outline: none; stroke: var(--text); stroke-width: 3; }
 .future { fill: none; stroke-width: 2; opacity: 0.5; }
 .expected { fill: color-mix(in srgb, var(--cycle-bleed) 22%, transparent); stroke: var(--cycle-bleed); stroke-width: 2.5; }
-.expected-day { fill: var(--cycle-bleed); }
 .expected-text { fill: var(--text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .centre-day { fill: var(--text); font-size: 44px; text-anchor: middle; }
 .centre-date { fill: var(--muted); font-size: 24px; text-anchor: middle; }
@@ -52,8 +50,11 @@ form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
 .day-nav h2 { flex: 1; text-align: center; font-size: 17px; }
 .day-nav button { width: 44px; height: 44px; padding: 0; flex: none; font-size: 22px; }
 .day-nav button:disabled { opacity: 0.3; }
-form.in-panel > .field:first-child { display: none; }
+/* The panel's title shows the date, which is fixed there. */
+form.in-panel #fDate { visibility: hidden; }
 
-/* Save and Clear day share a row; Save takes it all when there is nothing to clear. */
-.form-actions { display: flex; gap: 8px; }
-.form-actions button { flex: 1; min-width: 0; }
+/* Top of the form: Clear day, date, Save. Clear keeps its place when there is nothing to clear. */
+.form-top { display: flex; gap: 8px; align-items: stretch; }
+form.stack .form-top button { flex: 1 1 0; min-width: 0; min-height: 40px; padding: 4px 6px; font-size: 13px; line-height: 1.2; }
+form.stack .form-top input { flex: 0 0 140px; width: 140px; min-width: 0; min-height: 40px; padding: 0 8px; font-size: 14px; }
+form.stack .form-top #clearBtn[hidden] { display: block; visibility: hidden; }
