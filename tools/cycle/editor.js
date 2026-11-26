@@ -1,6 +1,6 @@
 // The entry form: one day at a time. A day with an entry always shows its saved values.
 import { today } from "../../shared/dates.js";
-import { t } from "./i18n.js?v=4";
+import { t } from "./i18n.js?v=5";
 import { FLOWS, PAINS } from "./rules.js?v=1";
 
 // One form, used both at the top of the page and in the day panel (it is moved there and back).
@@ -13,6 +13,12 @@ export function createEditor(store, onChange) {
   const clear = $("clearBtn");
   let busy = false;
   let armed = false; // Clear day needs a second tap
+  let tickTimer;
+  const tick = (on) => {
+    clearTimeout(tickTimer);
+    save.classList.toggle("done", on);
+    if (on) tickTimer = setTimeout(() => tick(false), 1200);
+  };
 
   // A joined row of buttons with one choice. With "optional", tapping the choice again clears it.
   function segmented(id, values, prefix, optional) {
@@ -21,7 +27,7 @@ export function createEditor(store, onChange) {
       const b = document.createElement("button");
       b.type = "button";
       b.textContent = t(`${prefix}_${v}`);
-      b.addEventListener("click", () => { set(optional && value === v ? null : v); $("formOk").textContent = ""; });
+      b.addEventListener("click", () => set(optional && value === v ? null : v));
       return b;
     });
     const set = (v) => {
@@ -34,7 +40,7 @@ export function createEditor(store, onChange) {
   const flow = segmented("fFlow", FLOWS, "flow", false);
   const pain = segmented("fPain", PAINS, "pain", true);
 
-  const message = (error = "", ok = "") => { $("formError").textContent = error; $("formOk").textContent = ok; };
+  const message = (error = "") => { $("formError").textContent = error; };
   const disarm = () => { armed = false; clear.textContent = t("clearDay"); };
   const valid = () => date.value !== "" && date.value <= today();
 
@@ -62,10 +68,10 @@ export function createEditor(store, onChange) {
     message();
     for (const el of $("entryForm").elements) el.disabled = true;
     let error = "";
-    let ok = "";
     let reload = false;
+    let saved = false;
     try {
-      ({ ok, error = "", reload = false } = await action(date.value));
+      ({ error = "", reload = false, saved = false } = await action(date.value));
     } catch (e) {
       error = e.message === "unreadable" ? t("dayUnreadable") : t("saveFail", { msg: e.message });
     }
@@ -76,7 +82,8 @@ export function createEditor(store, onChange) {
       await show();
     }
     disarm();
-    message(error, ok);
+    message(error);
+    if (saved) tick(true);
   }
 
   $("entryForm").addEventListener("submit", (e) => {
@@ -85,7 +92,7 @@ export function createEditor(store, onChange) {
     if (!valid()) return message(t("badDate"));
     run(async (day) => {
       const result = await store.save(day, { flow: flow.get(), pain: pain.get(), note: note.value });
-      return result === "changed" ? { error: t("changedElsewhere"), reload: true } : { ok: t("saved"), reload: true };
+      return result === "changed" ? { error: t("changedElsewhere"), reload: true } : { reload: true, saved: true };
     });
   });
   clear.addEventListener("click", () => {
@@ -94,10 +101,9 @@ export function createEditor(store, onChange) {
       clear.textContent = t("deleteArm");
       return;
     }
-    run(async (day) => { await store.remove(day); return { ok: t("cleared"), reload: true }; });
+    run(async (day) => { await store.remove(day); return { reload: true }; });
   });
-  date.addEventListener("change", show);
-  note.addEventListener("input", () => { $("formOk").textContent = ""; });
+  date.addEventListener("change", () => { tick(false); show(); });
   // The app can stay open past midnight.
   date.value = today();
   show();
@@ -105,7 +111,7 @@ export function createEditor(store, onChange) {
   return {
     isBusy: () => busy,
     date: () => date.value,
-    open: (day) => { date.max = today(); date.value = day; return show(); },
+    open: (day) => { tick(false); date.max = today(); date.value = day; return show(); },
     // A new day has started: move on if the form was still showing the old today.
     newDay: (previous) => {
       date.max = today();
