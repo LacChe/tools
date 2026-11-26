@@ -1,9 +1,11 @@
 // The entry form: one day at a time. A day with an entry always shows its saved values.
 import { today } from "../../shared/dates.js";
-import { t } from "./i18n.js?v=2";
+import { t } from "./i18n.js?v=3";
 import { FLOWS, PAINS } from "./rules.js?v=1";
 
-export function createEditor(store) {
+// One form, used both at the top of the page and in the day panel (it is moved there and back).
+// onChange runs after a save or a delete.
+export function createEditor(store, onChange) {
   const $ = (id) => document.getElementById(id);
   const date = $("fDate");
   const note = $("fNote");
@@ -69,7 +71,10 @@ export function createEditor(store) {
     }
     for (const el of $("entryForm").elements) el.disabled = false;
     busy = false;
-    if (reload) await show();
+    if (reload) {
+      onChange();
+      await show();
+    }
     disarm();
     message(error, ok);
   }
@@ -94,8 +99,17 @@ export function createEditor(store) {
   date.addEventListener("change", show);
   note.addEventListener("input", () => { $("formOk").textContent = ""; });
   // The app can stay open past midnight.
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) date.max = today(); });
-
   date.value = today();
   show();
+
+  return {
+    isBusy: () => busy,
+    date: () => date.value,
+    open: (day) => { date.max = today(); date.value = day; return show(); },
+    // A new day has started: move on if the form was still showing the old today.
+    newDay: (previous) => {
+      date.max = today();
+      if (date.value === previous && !busy) { date.value = today(); show(); }
+    },
+  };
 }

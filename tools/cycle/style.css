@@ -33,3 +33,27 @@ form.stack input[type="date"] { width: 100%; }
 .cycle-days { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 1px; align-items: end; }
 .cycle-length { width: 24px; flex: none; text-align: right; }
 .typical + .ex-label, .card + .ex-label { margin: 6px 0 24px; display: block; }
+
+/* Spiral */
+#formSlot { margin-bottom: 8px; }
+form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
+.spiral { display: block; width: 100%; height: auto; }
+.spiral .day { cursor: pointer; stroke-linejoin: round; }
+.spiral .day:focus-visible { outline: none; stroke: var(--text); stroke-width: 3; }
+.today-mark { fill: none; stroke: var(--text); stroke-width: 3; pointer-events: none; }
+.future { fill: none; stroke-width: 2; opacity: 0.5; }
+.expected { fill: color-mix(in srgb, var(--cycle-bleed) 22%, transparent); stroke: var(--cycle-bleed); stroke-width: 2.5; }
+.expected-day { fill: var(--cycle-bleed); }
+.expected-text { fill: var(--text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.centre-day { fill: var(--text); font-size: 44px; text-anchor: middle; }
+.centre-date { fill: var(--muted); font-size: 24px; text-anchor: middle; }
+.legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 8px 0 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: flex-end; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend svg { width: 20px; height: 28px; }
+
+/* Day panel */
+.day-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.day-nav h2 { flex: 1; text-align: center; font-size: 17px; }
+.day-nav button { width: 44px; height: 44px; padding: 0; flex: none; font-size: 22px; }
+.day-nav button:disabled { opacity: 0.3; }
+form.in-panel > .field:first-child { display: none; }

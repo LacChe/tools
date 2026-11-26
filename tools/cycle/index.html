@@ -8,7 +8,7 @@
   <title>Cycle</title>
   <link rel="stylesheet" href="../../base.css?v=9">
   <link rel="stylesheet" href="../../theme.css?v=9">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -26,6 +26,7 @@
     </nav>
 
     <div id="logView">
+    <div id="formSlot">
     <form class="stack compact" id="entryForm" novalidate>
       <label class="field"><span data-i18n="date">Date</span>
         <input type="date" id="fDate" required>
@@ -45,9 +46,24 @@
       <p class="success" id="formOk" role="status"></p>
     </form>
     </div>
+    <p class="empty" id="firstUse" hidden data-i18n="firstUse">Add the days of your past periods to start.</p>
+    <div id="spiral"></div>
+    <div id="legend"></div>
+    </div>
     <div id="detailsView" hidden></div>
     <p class="error" id="readError" role="alert" hidden></p>
   </main>
-  <script type="module" src="app.js?v=4"></script>
+  <div class="overlay" id="dayOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
+      <div class="day-nav">
+        <button type="button" id="dayPrev" aria-label="Previous day" data-i18n-aria="prevDay">‹</button>
+        <h2 class="panel-title" id="dayTitle"></h2>
+        <button type="button" id="dayNext" aria-label="Next day" data-i18n-aria="nextDay">›</button>
+        <button type="button" class="panel-close" id="dayClose" aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <div id="daySlot"></div>
+    </div>
+  </div>
+  <script type="module" src="app.js?v=5"></script>
 </body>
 </html>
