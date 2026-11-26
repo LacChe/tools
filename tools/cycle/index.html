@@ -10,13 +10,15 @@
   <link rel="stylesheet" href="../../theme.css?v=7">
 </head>
 <body>
-  <main class="page">
-    <header class="bar">
+  <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
+  <main class="page" id="app" hidden>
+    <header class="bar bar-centered">
       <a class="btn" href="../../index.html" data-i18n="home">Home</a>
       <h1 data-i18n="title">Cycle</h1>
+      <!-- Holds the place of the settings button other apps have, so the title lines up with theirs. -->
+      <span class="bar-icon" aria-hidden="true"></span>
     </header>
-    <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
-    <p class="empty" id="app" hidden data-i18n="empty">Nothing here yet.</p>
+    <p class="empty" data-i18n="empty">Nothing here yet.</p>
   </main>
   <script type="module" src="app.js?v=1"></script>
 </body>
