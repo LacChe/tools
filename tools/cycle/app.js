@@ -1,10 +1,10 @@
 import { sb, requireAuth, signOut } from "../../auth.js";
 import { loadKeys } from "../../shared/cycle-keys.js";
-import { t, getLang, applyStatic } from "./i18n.js?v=5";
+import { t, getLang, applyStatic } from "./i18n.js?v=6";
 import { createStore } from "./store.js?v=1";
-import { createEditor } from "./editor.js?v=6";
-import { renderDetails } from "./details.js?v=5";
-import { renderSpiral } from "./spiral.js?v=5";
+import { createEditor } from "./editor.js?v=7";
+import { renderDetails } from "./details.js?v=6";
+import { renderSpiral } from "./spiral.js?v=6";
 import { addDays, parseISO, today } from "../../shared/dates.js";
 
 applyStatic();
@@ -27,7 +27,6 @@ else {
       const draw = () => {
         shownDay = today();
         renderSpiral($("spiral"), store.entries, shownDay, openDay);
-        $("firstUse").hidden = store.entries.size > 0;
       };
       const editor = createEditor(store, draw);
 
