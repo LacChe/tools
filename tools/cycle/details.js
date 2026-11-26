@@ -2,7 +2,7 @@
 import { addDays, parseISO } from "../../shared/dates.js";
 import { t, getLang } from "./i18n.js?v=4";
 import { analyse, FLOWS } from "./rules.js?v=1";
-import { dayColor, painColor } from "./colors.js?v=1";
+import { dayColor, painColor } from "./colors.js?v=2";
 
 const el = (tag, cls, text) => {
   const node = document.createElement(tag);

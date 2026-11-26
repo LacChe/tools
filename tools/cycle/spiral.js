@@ -3,7 +3,7 @@
 import { addDays, parseISO } from "../../shared/dates.js";
 import { t, getLang } from "./i18n.js?v=4";
 import { analyse, daysBetween, FLOWS } from "./rules.js?v=1";
-import { dayColor, positionColor } from "./colors.js?v=1";
+import { dayColor, positionColor } from "./colors.js?v=2";
 
 const NS = "http://www.w3.org/2000/svg";
 // Sizes in drawing units.

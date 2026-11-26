@@ -34,6 +34,8 @@ form.stack [hidden] { display: none; }
 .typical + .ex-label, .card + .ex-label { margin: 6px 0 24px; display: block; }
 
 /* Spiral */
+/* No spare space under the spiral, so a screen that fits it all does not scroll. */
+.page { padding-bottom: 8px; }
 #formSlot { margin-bottom: 8px; }
 form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
 .spiral { display: block; width: 100%; height: auto; }
