@@ -12,3 +12,24 @@ form.stack .segmented button[aria-pressed="true"] { background: var(--surface-ho
 form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
 form.stack [hidden] { display: none; }
 form.stack input[type="date"] { width: 100%; }
+
+/* Log / Details: two centred buttons, as in Expenses. */
+.view-toggle { justify-content: center; gap: 8px; }
+.view-toggle button { min-width: 128px; }
+
+/* Details */
+.card { padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.figures { display: flex; gap: 8px; margin-bottom: 24px; }
+.figures .card { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.figures strong { font-size: 24px; font-weight: 600; }
+.ex-label { font-size: 12px; color: var(--muted); }
+/* --level 0 to 4: none, spotting, light, medium, heavy. --day: the colour. */
+.day-block { display: block; height: calc(var(--step) * (var(--level) + 1)); background: var(--day); border-radius: 2px; }
+.day-block.unlogged { background: color-mix(in srgb, var(--day) 48%, transparent); border: 1px solid var(--day); }
+.typical { --step: 14px; display: flex; align-items: flex-end; gap: 4px; }
+.typical-day { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; text-align: center; }
+.cycle-row { --step: 5px; display: flex; align-items: flex-end; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.cycle-start { width: 84px; flex: none; }
+.cycle-days { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); gap: 1px; align-items: end; }
+.cycle-length { width: 24px; flex: none; text-align: right; }
+.typical + .ex-label, .card + .ex-label { margin: 6px 0 24px; display: block; }

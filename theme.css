@@ -1,6 +1,16 @@
 /* Placeholder for the future theme overlay: redefine the variables from base.css here. */
 :root[data-app="exercise"] { --accent: var(--accent-2); }
 
+/* Cycle day colours, read through tools/cycle/colors.js. */
+:root[data-app="cycle"] {
+  --cycle-bleed: #EE6C85;
+  --cycle-near: #B79AD9;
+  --cycle-between-1: #8C8FDD;
+  --cycle-between-2: #5C94D6;
+  --cycle-mid: #4FB8A8;
+  --cycle-pain: #4B1766;
+}
+
 /* Expense type colors: one token per category slug (--cat-<slug>), read through catColor() in tools/expenses/common.js.
    A slug with no token here falls back to --muted. A theme redefines these. */
 :root[data-app="expenses"] {
