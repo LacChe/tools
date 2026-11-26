@@ -2,5 +2,5 @@
   { "id": "wachter", "name_en": "Wachter", "name_zh": "Wachter", "icon": "tools/wachter/icon.svg", "path": "tools/wachter/" },
   { "id": "expenses", "name_en": "Expenses", "name_zh": "支出", "icon": "tools/expenses/icon.svg", "path": "tools/expenses/" },
   { "id": "exercise", "name_en": "Exercise", "name_zh": "运动", "icon": "tools/exercise/icon.svg", "path": "tools/exercise/" },
-  { "id": "cycle", "name_en": "Cycle", "name_zh": "周期", "icon": "tools/cycle/icon.svg", "path": "tools/cycle/" }
+  { "id": "cycle", "name_en": "Cycle", "name_zh": "周期", "icon": "tools/cycle/icon.svg?v=2", "path": "tools/cycle/" }
 ]
