@@ -31,12 +31,7 @@
 
 .danger-btn { color: var(--danger); border-color: var(--danger); }
 
-/* Compact form: smaller controls, no spinner arrows on number inputs */
-.compact { gap: 8px; }
-.compact .field { font-size: 11px; gap: 2px; }
-.compact input, .compact select { min-height: 36px; padding: 0 8px; font-size: 14px; }
-.compact button[type="submit"] { min-height: 40px; }
-.compact .field-row { gap: 8px; }
+/* Add form: column widths, no spinner arrows on number inputs */
 .compact .cur-field { flex: 0 0 76px; }
 .compact .field-row > .field:last-child { flex: 1.2; }
 input[type="number"] { -moz-appearance: textfield; appearance: textfield; }

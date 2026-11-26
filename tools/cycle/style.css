@@ -1,0 +1,14 @@
+/* A joined row of buttons with one choice. */
+.segmented { display: flex; }
+form.stack .segmented button {
+  flex: 1 1 0; min-width: 0; min-height: 40px; padding: 0 2px; font-size: 13px; font-weight: 400;
+  color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 0;
+}
+form.stack .segmented button + button { border-left: 0; }
+form.stack .segmented button:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+form.stack .segmented button:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+form.stack .segmented button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); font-weight: 700; }
+
+form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
+form.stack [hidden] { display: none; }
+form.stack input[type="date"] { width: 100%; }

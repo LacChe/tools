@@ -117,6 +117,13 @@ form.stack button { background: var(--accent); color: var(--on-accent); border: 
 .edit-info { margin: 0; color: var(--text-soft); line-height: 1.5; }
 .edit-info:empty { display: none; }
 
+/* Compact form: smaller controls, for an entry form that stays on the page. */
+.compact { gap: 8px; }
+.compact .field { font-size: 11px; gap: 2px; }
+.compact input, .compact select { min-height: 36px; padding: 0 8px; font-size: 14px; }
+.compact button[type="submit"] { min-height: 40px; }
+.compact .field-row { gap: 8px; }
+
 /* Tab switcher: the look is shared; each app sets how the buttons are sized and spaced. */
 .view-toggle { display: flex; margin: 0 auto 20px; }
 .view-toggle button { font-size: 14px; }
