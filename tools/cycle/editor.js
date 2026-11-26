@@ -1,6 +1,6 @@
 // The entry form: one day at a time. A day with an entry always shows its saved values.
 import { today } from "../../shared/dates.js";
-import { t } from "./i18n.js?v=3";
+import { t } from "./i18n.js?v=4";
 import { FLOWS, PAINS } from "./rules.js?v=1";
 
 // One form, used both at the top of the page and in the day panel (it is moved there and back).

@@ -8,7 +8,7 @@
   <title>Cycle</title>
   <link rel="stylesheet" href="../../base.css?v=9">
   <link rel="stylesheet" href="../../theme.css?v=9">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -16,8 +16,8 @@
     <header class="bar bar-centered">
       <a class="btn" href="../../index.html" data-i18n="home">Home</a>
       <h1 data-i18n="title">Cycle</h1>
-      <!-- Holds the place of the settings button other apps have, so the title lines up with theirs. -->
-      <span class="bar-icon" aria-hidden="true"></span>
+      <!-- Where other apps have their settings button. -->
+      <button type="button" class="bar-icon" id="openLegend" aria-label="Legend" data-i18n-aria="legend">ⓘ</button>
     </header>
 
     <nav class="view-toggle" aria-label="View" data-i18n-aria="view">
@@ -40,19 +40,29 @@
       <label class="field"><span data-i18n="note">Note</span>
         <input type="text" id="fNote" maxlength="500" autocomplete="off">
       </label>
-      <button type="submit" id="saveBtn" data-i18n="save">Save</button>
-      <button type="button" class="danger-btn" id="clearBtn" data-i18n="clearDay" hidden>Clear day</button>
+      <div class="form-actions">
+        <button type="submit" id="saveBtn" data-i18n="save">Save</button>
+        <button type="button" class="danger-btn" id="clearBtn" data-i18n="clearDay" hidden>Clear day</button>
+      </div>
       <p class="error" id="formError" role="alert"></p>
       <p class="success" id="formOk" role="status"></p>
     </form>
     </div>
     <p class="empty" id="firstUse" hidden data-i18n="firstUse">Add the days of your past periods to start.</p>
     <div id="spiral"></div>
-    <div id="legend"></div>
     </div>
     <div id="detailsView" hidden></div>
     <p class="error" id="readError" role="alert" hidden></p>
   </main>
+  <div class="overlay" id="legendOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="legendTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="legendTitle" data-i18n="legend">Legend</h2>
+        <button type="button" class="panel-close" id="legendClose" aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <div id="legend"></div>
+    </div>
+  </div>
   <div class="overlay" id="dayOverlay">
     <div class="panel" role="dialog" aria-modal="true" aria-labelledby="dayTitle">
       <div class="day-nav">
@@ -64,6 +74,6 @@
       <div id="daySlot"></div>
     </div>
   </div>
-  <script type="module" src="app.js?v=5"></script>
+  <script type="module" src="app.js?v=6"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 import { sb, requireAuth, signOut } from "../../auth.js";
 import { loadKeys } from "../../shared/cycle-keys.js";
-import { t, getLang, applyStatic } from "./i18n.js?v=3";
+import { t, getLang, applyStatic } from "./i18n.js?v=4";
 import { createStore } from "./store.js?v=1";
-import { createEditor } from "./editor.js?v=3";
-import { renderDetails } from "./details.js?v=2";
-import { renderSpiral, renderLegend } from "./spiral.js?v=1";
+import { createEditor } from "./editor.js?v=4";
+import { renderDetails } from "./details.js?v=3";
+import { renderSpiral, renderLegend } from "./spiral.js?v=2";
 import { addDays, parseISO, today } from "../../shared/dates.js";
 
 applyStatic();
@@ -61,7 +61,11 @@ else {
       $("dayNext").addEventListener("click", () => move(1));
       $("dayClose").addEventListener("click", closeDay);
       $("dayOverlay").addEventListener("click", (e) => { if (e.target === $("dayOverlay")) closeDay(); });
-      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDay(); });
+      const legend = (open) => $("legendOverlay").classList.toggle("open", open);
+      $("openLegend").addEventListener("click", () => legend(true));
+      $("legendClose").addEventListener("click", () => legend(false));
+      $("legendOverlay").addEventListener("click", (e) => { if (e.target === $("legendOverlay")) legend(false); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeDay(); legend(false); } });
 
       // The app can stay open past midnight: keep today at the top.
       const checkDay = () => {

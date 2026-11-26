@@ -1,7 +1,7 @@
 // The spiral. Today is at 12 o'clock; each day is 360° / cycle length, later days clockwise and further out.
 // Bleeding shapes the outer edge (height and ridges), pain only changes the shade.
 import { addDays, parseISO } from "../../shared/dates.js";
-import { t, getLang } from "./i18n.js?v=3";
+import { t, getLang } from "./i18n.js?v=4";
 import { analyse, daysBetween, FLOWS } from "./rules.js?v=1";
 import { dayColor, positionColor } from "./colors.js?v=1";
 
@@ -11,7 +11,7 @@ const RADIUS = 200;   // inner edge of today
 const PITCH = 58;     // how far the spiral moves out in one turn
 const BASE = 24;      // height of a flat day
 const LEVEL = 6;      // extra height per bleeding level
-const RIDGE = 4.5;    // ridge height
+const RIDGE = 3;      // ridge height
 const GAP = 3;        // between days
 const SLOPE = 1 / 6;  // share of a day used to slope down to a lower neighbour
 const HISTORY = 1.5;  // cycles shown back from today...
@@ -26,20 +26,20 @@ const smooth = (x) => x * x * (3 - 2 * x);
 const levelOf = (entry) => Math.max(0, FLOWS.indexOf(entry?.flow ?? "none"));
 const shortDate = (iso) => parseISO(iso).toLocaleDateString(getLang() === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric" });
 
-// Outer height at x (0 to 1 across a day). Only the taller of two neighbours slopes, down to the lower one.
+// Outer height at x (0 to 1 across the drawn block): "level" identical rounded ridges spread evenly across it.
+// Only an end next to a shorter block changes: it slopes down to meet it, and the ridges share what is left.
 function height(level, before, after, x) {
-  const own = level * LEVEL;
-  let h = own;
-  if (before < level && x < SLOPE) h = before * LEVEL + (own - before * LEVEL) * smooth(x / SLOPE);
-  if (after < level && x > 1 - SLOPE) h = after * LEVEL + (own - after * LEVEL) * smooth((1 - x) / SLOPE);
-  // Exactly "level" rounded ridges, evenly spaced.
-  const ridge = level ? RIDGE * (1 - Math.cos(2 * Math.PI * level * x)) / 2 : 0;
-  return BASE + h + ridge;
+  const from = before < level ? SLOPE : 0;
+  const to = after < level ? 1 - SLOPE : 1;
+  if (x < from) return BASE + (before + (level - before) * smooth(x / SLOPE)) * LEVEL;
+  if (x > to) return BASE + (after + (level - after) * smooth((1 - x) / SLOPE)) * LEVEL;
+  const ridge = level ? RIDGE * (1 - Math.cos((2 * Math.PI * level * (x - from)) / (to - from))) / 2 : 0;
+  return BASE + level * LEVEL + ridge;
 }
 
 // A closed band from day position a to b (in days from today, today's block being -0.5 to 0.5).
 // inset shrinks it on every side, so an outline is drawn inside the shape.
-function band(step, a, b, outer, { inset = 0, points = 40 } = {}) {
+function band(step, a, b, outer, { inset = 0, points = 96 } = {}) {
   const radius = (day) => RADIUS + PITCH * (day * step) / (2 * Math.PI);
   const trim = (GAP / 2 + inset) / radius((a + b) / 2) / step; // gap, in days
   const from = a + trim;
@@ -49,7 +49,7 @@ function band(step, a, b, outer, { inset = 0, points = 40 } = {}) {
   const back = [];
   for (let i = 0; i <= points; i++) {
     const day = from + (to - from) * (i / points);
-    out.push(at(day, radius(day) + outer(day) - inset));
+    out.push(at(day, radius(day) + outer(day, i / points) - inset));
     back.push(at(day, radius(day) + inset));
   }
   return `M${out.join("L")}L${back.reverse().join("L")}Z`;
@@ -92,18 +92,18 @@ export function renderSpiral(box, entries, today, onPick) {
     const color = dayColor(entry, where.index, where.length, where.period);
     const level = levelOf(entry);
     const before = levelOf(entries.get(addDays(date, -1)));
-    const after = k < 0 ? levelOf(entries.get(addDays(date, 1))) : 0;
+    // Today has a next block only when a forecast follows it.
+    const after = k < 0 ? levelOf(entries.get(addDays(date, 1))) : info.forecast ? 0 : level;
     // The oldest stretch fades into the background while getting gently thinner.
     const fadeDays = FADE * length;
     const faded = (day) => Math.min(1, Math.max(0, (oldest + fadeDays - day) / fadeDays));
-    const outer = (day) => height(level, before, after, Math.min(1, Math.max(0, day - k + 0.5))) * (1 - 0.5 * faded(day));
+    const outer = (day, x) => height(level, before, after, x) * (1 - 0.5 * faded(day));
     const shape = band(step, k - 0.5, k + 0.5, outer, { inset: entry ? 0 : 1.25 });
     const path = add(shape, { class: "day", "data-date": date, tabindex: 0, role: "button", "aria-label": shortDate(date) },
       entry ? { fill: color } : { fill: `color-mix(in srgb, ${color} 48%, transparent)`, stroke: color, strokeWidth: "2.5" });
     path.style.opacity = String(1 - 0.95 * faded(k));
     path.addEventListener("click", () => onPick(date));
     path.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onPick(date); } });
-    if (k === 0) add(band(step, -0.58, 0.58, (day) => outer(day) + 4, { inset: -4 }), { class: "today-mark" });
   }
 
   // Forecast: faint outlines, then the band of possible start days, then the usual period length fading out.

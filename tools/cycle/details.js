@@ -1,6 +1,6 @@
 // The Details tab: last and range figures, the typical period, and past cycles lined up on day 1.
 import { addDays, parseISO } from "../../shared/dates.js";
-import { t, getLang } from "./i18n.js?v=3";
+import { t, getLang } from "./i18n.js?v=4";
 import { analyse, FLOWS } from "./rules.js?v=1";
 import { dayColor, painColor } from "./colors.js?v=1";
 
