@@ -5,6 +5,5 @@
     .t1 { fill: color-mix(in srgb, var(--accent, #c9a24b) 24%, transparent); }
     .t2 { fill: color-mix(in srgb, var(--accent-2, #4f9d8a) 24%, transparent); }
   </style>
-  <path class="c1" d="M24 6 A18 18 0 0 0 24 42 A15 15 0 0 0 24 12 A12 12 0 0 0 24 36 A9 9 0 0 0 24 18"/>
-  <circle class="c2 t2" cx="24" cy="6" r="3"/>
+  <path class="c1 t1" d="M27 6 A18 18 0 1 0 42 33 A15 15 0 0 1 27 6 Z"/><path class="c2 t2" d="M35 10 C35 10 29.5 16.5 29.5 20 A5.5 5.5 0 0 0 40.5 20 C40.5 16.5 35 10 35 10 Z"/>
 </svg>
