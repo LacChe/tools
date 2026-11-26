@@ -8,7 +8,7 @@
   <title>Cycle</title>
   <link rel="stylesheet" href="../../base.css?v=9">
   <link rel="stylesheet" href="../../theme.css?v=9">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
@@ -28,9 +28,11 @@
     <div id="logView">
     <div id="formSlot">
     <form class="stack compact" id="entryForm" novalidate>
-      <label class="field"><span data-i18n="date">Date</span>
-        <input type="date" id="fDate" required>
-      </label>
+      <div class="form-top">
+        <button type="button" class="danger-btn" id="clearBtn" data-i18n="clearDay" hidden>Clear day</button>
+        <input type="date" id="fDate" aria-label="Date" data-i18n-aria="date" required>
+        <button type="submit" id="saveBtn" data-i18n="save">Save</button>
+      </div>
       <div class="field"><span data-i18n="flow">Flow</span>
         <div class="segmented" id="fFlow" role="group" aria-label="Flow" data-i18n-aria="flow"></div>
       </div>
@@ -40,10 +42,6 @@
       <label class="field"><span data-i18n="note">Note</span>
         <input type="text" id="fNote" maxlength="500" autocomplete="off">
       </label>
-      <div class="form-actions">
-        <button type="submit" id="saveBtn" data-i18n="save">Save</button>
-        <button type="button" class="danger-btn" id="clearBtn" data-i18n="clearDay" hidden>Clear day</button>
-      </div>
       <p class="error" id="formError" role="alert"></p>
       <p class="success" id="formOk" role="status"></p>
     </form>
@@ -65,6 +63,6 @@
       <div id="daySlot"></div>
     </div>
   </div>
-  <script type="module" src="app.js?v=6"></script>
+  <script type="module" src="app.js?v=7"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@ import { t, getLang, applyStatic } from "./i18n.js?v=4";
 import { createStore } from "./store.js?v=1";
 import { createEditor } from "./editor.js?v=4";
 import { renderDetails } from "./details.js?v=3";
-import { renderSpiral } from "./spiral.js?v=2";
+import { renderSpiral } from "./spiral.js?v=3";
 import { addDays, parseISO, today } from "../../shared/dates.js";
 
 applyStatic();
