@@ -1,9 +1,7 @@
 // The entry form: one day at a time. A day with an entry always shows its saved values.
 import { today } from "../../shared/dates.js";
-import { t } from "./i18n.js";
-
-const FLOWS = ["none", "spotting", "light", "medium", "heavy"];
-const PAINS = ["none", "mild", "moderate", "severe"];
+import { t } from "./i18n.js?v=2";
+import { FLOWS, PAINS } from "./rules.js?v=1";
 
 export function createEditor(store) {
   const $ = (id) => document.getElementById(id);
