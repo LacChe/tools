@@ -7,7 +7,7 @@ form.stack .segmented button {
 form.stack .segmented button + button { border-left: 0; }
 form.stack .segmented button:first-child { border-radius: var(--radius) 0 0 var(--radius); }
 form.stack .segmented button:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
-form.stack .segmented button[aria-pressed="true"] { background: var(--surface-hover); color: var(--text); font-weight: 700; }
+form.stack .segmented button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 700; }
 
 form.stack .danger-btn { background: none; color: var(--danger); border: 1px solid var(--danger); font-weight: 400; }
 form.stack [hidden] { display: none; }
@@ -15,6 +15,7 @@ form.stack [hidden] { display: none; }
 /* Log / Details: two small centred buttons. */
 .view-toggle { justify-content: center; gap: 8px; margin-bottom: 12px; }
 .view-toggle button { min-width: 88px; min-height: 32px; font-size: 13px; }
+.view-toggle button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 700; }
 
 /* Details */
 .card { padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
@@ -37,7 +38,7 @@ form.stack [hidden] { display: none; }
 /* No spare space under the spiral, so a screen that fits it all does not scroll. */
 .page { padding-bottom: 8px; }
 #formSlot { margin-bottom: 8px; }
-form .error:empty, form .success:empty { min-height: 0; margin: -4px 0; }
+form .error:empty { min-height: 0; margin: -4px 0; }
 .spiral { display: block; width: 100%; height: auto; }
 .spiral .day { cursor: pointer; stroke-linejoin: round; }
 .spiral .day:focus-visible { outline: none; stroke: var(--text); stroke-width: 3; }

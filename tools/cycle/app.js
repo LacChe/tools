@@ -1,10 +1,10 @@
 import { sb, requireAuth, signOut } from "../../auth.js";
 import { loadKeys } from "../../shared/cycle-keys.js";
-import { t, getLang, applyStatic } from "./i18n.js?v=4";
+import { t, getLang, applyStatic } from "./i18n.js?v=5";
 import { createStore } from "./store.js?v=1";
-import { createEditor } from "./editor.js?v=4";
-import { renderDetails } from "./details.js?v=4";
-import { renderSpiral } from "./spiral.js?v=4";
+import { createEditor } from "./editor.js?v=5";
+import { renderDetails } from "./details.js?v=5";
+import { renderSpiral } from "./spiral.js?v=5";
 import { addDays, parseISO, today } from "../../shared/dates.js";
 
 applyStatic();

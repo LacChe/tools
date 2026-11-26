@@ -1,7 +1,7 @@
 // The spiral. Today is at 12 o'clock; each day is 360° / cycle length, later days clockwise and further out.
 // Bleeding raises the outer edge (flat on top), pain only changes the shade.
 import { addDays, parseISO } from "../../shared/dates.js";
-import { t, getLang } from "./i18n.js?v=4";
+import { t, getLang } from "./i18n.js?v=5";
 import { analyse, daysBetween, FLOWS } from "./rules.js?v=1";
 import { dayColor, positionColor } from "./colors.js?v=2";
 
