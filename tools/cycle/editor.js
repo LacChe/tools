@@ -13,6 +13,12 @@ export function createEditor(store, onChange) {
   const clear = $("clearBtn");
   let busy = false;
   let armed = false; // Clear day needs a second tap
+  let tickTimer;
+  const tick = (on) => {
+    clearTimeout(tickTimer);
+    save.classList.toggle("done", on);
+    if (on) tickTimer = setTimeout(() => tick(false), 1200);
+  };
 
   // A joined row of buttons with one choice. With "optional", tapping the choice again clears it.
   function segmented(id, values, prefix, optional) {
@@ -63,8 +69,9 @@ export function createEditor(store, onChange) {
     for (const el of $("entryForm").elements) el.disabled = true;
     let error = "";
     let reload = false;
+    let saved = false;
     try {
-      ({ error = "", reload = false } = await action(date.value));
+      ({ error = "", reload = false, saved = false } = await action(date.value));
     } catch (e) {
       error = e.message === "unreadable" ? t("dayUnreadable") : t("saveFail", { msg: e.message });
     }
@@ -76,6 +83,7 @@ export function createEditor(store, onChange) {
     }
     disarm();
     message(error);
+    if (saved) tick(true);
   }
 
   $("entryForm").addEventListener("submit", (e) => {
@@ -84,7 +92,7 @@ export function createEditor(store, onChange) {
     if (!valid()) return message(t("badDate"));
     run(async (day) => {
       const result = await store.save(day, { flow: flow.get(), pain: pain.get(), note: note.value });
-      return result === "changed" ? { error: t("changedElsewhere"), reload: true } : { reload: true };
+      return result === "changed" ? { error: t("changedElsewhere"), reload: true } : { reload: true, saved: true };
     });
   });
   clear.addEventListener("click", () => {
@@ -95,7 +103,7 @@ export function createEditor(store, onChange) {
     }
     run(async (day) => { await store.remove(day); return { reload: true }; });
   });
-  date.addEventListener("change", show);
+  date.addEventListener("change", () => { tick(false); show(); });
   // The app can stay open past midnight.
   date.value = today();
   show();
@@ -103,7 +111,7 @@ export function createEditor(store, onChange) {
   return {
     isBusy: () => busy,
     date: () => date.value,
-    open: (day) => { date.max = today(); date.value = day; return show(); },
+    open: (day) => { tick(false); date.max = today(); date.value = day; return show(); },
     // A new day has started: move on if the form was still showing the old today.
     newDay: (previous) => {
       date.max = today();

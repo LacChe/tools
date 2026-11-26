@@ -1,8 +1,9 @@
 /* Placeholder for the future theme overlay: redefine the variables from base.css here. */
 :root[data-app="exercise"] { --accent: var(--accent-2); }
 
-/* Cycle day colours, read through tools/cycle/colors.js. */
+/* Cycle: teal buttons, and the day colours read through tools/cycle/colors.js. */
 :root[data-app="cycle"] {
+  --accent: var(--accent-2);
   --cycle-bleed: #EE6C85;
   --cycle-near: #5B82D6;
   --cycle-between-1: #4F9FD0;
