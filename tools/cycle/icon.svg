@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <style>
+    .c1 { stroke: var(--accent, #c9a24b); }
+    .c2 { stroke: var(--accent-2, #4f9d8a); }
+    .t1 { fill: color-mix(in srgb, var(--accent, #c9a24b) 24%, transparent); }
+    .t2 { fill: color-mix(in srgb, var(--accent-2, #4f9d8a) 24%, transparent); }
+  </style>
+  <path class="c1" d="M24 6 A18 18 0 0 0 24 42 A15 15 0 0 0 24 12 A12 12 0 0 0 24 36 A9 9 0 0 0 24 18"/>
+  <circle class="c2 t2" cx="24" cy="6" r="3"/>
+</svg>
