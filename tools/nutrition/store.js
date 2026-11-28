@@ -9,5 +9,12 @@ export function createStore(sb) {
     async goals() {
       return check(await sb.from("nutrition_goals").select("effective_from, protein, fat, carbs").order("effective_from"));
     },
+
+    // Upsert on (user_id, effective_from): a second save for the same date replaces the first.
+    async addGoal({ effective_from, protein, fat, carbs }) {
+      return check(await sb.from("nutrition_goals")
+        .upsert({ effective_from, protein, fat, carbs }, { onConflict: "user_id,effective_from" })
+        .select("effective_from, protein, fat, carbs").single());
+    },
   };
 }

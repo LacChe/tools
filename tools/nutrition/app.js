@@ -1,7 +1,10 @@
 // Boot and wiring only: auth, access check, tabs. No data logic and no DOM beyond the shell.
 import { sb, requireAuth } from "../../auth.js";
-import { t, applyStatic } from "./i18n.js?v=1";
-import { createStore } from "./store.js?v=1";
+import { t, applyStatic } from "./i18n.js?v=2";
+import { createStore } from "./store.js?v=2";
+import * as prefs from "./prefs.js?v=1";
+import { mount as mountSettings } from "./settings.js?v=1";
+import { today } from "../../shared/dates.js";
 
 applyStatic();
 await requireAuth();
@@ -36,10 +39,13 @@ else {
     window.addEventListener("hashchange", () => showView(viewFromHash()));
     showView(viewFromHash());
 
-    // Settings overlay: opened here, filled by settings.js in a later step.
+    // Views get this context; changed() will mark other views stale once they exist.
+    const ctx = { store, t, prefs, today, changed: () => {} };
+    const settings = mountSettings(document.getElementById("settingsBody"), ctx);
+
     const overlay = document.getElementById("settingsOverlay");
     const closeSettings = () => overlay.classList.remove("open");
-    document.getElementById("openSettings").addEventListener("click", () => overlay.classList.add("open"));
+    document.getElementById("openSettings").addEventListener("click", () => { overlay.classList.add("open"); settings.show(); });
     overlay.addEventListener("click", (e) => { if (e.target === overlay || e.target.closest("[data-close]")) closeSettings(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeSettings(); });
 
