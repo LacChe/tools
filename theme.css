@@ -12,6 +12,14 @@
   --cycle-pain-off: #0F3550;  /* pain on other days: stays blue */
 }
 
+/* Macro colors, read as var(--macro-<name>) by the nutrition views. A theme redefines these. */
+:root[data-app="nutrition"] {
+  --macro-protein: #6f9fc9;
+  --macro-fat: #d3b65f;
+  --macro-carbs: #7fb07f;
+  --macro-kcal: #bb88c6;
+}
+
 /* Expense type colors: one token per category slug (--cat-<slug>), read through catColor() in tools/expenses/common.js.
    A slug with no token here falls back to --muted. A theme redefines these. */
 :root[data-app="expenses"] {
