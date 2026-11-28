@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-app="nutrition">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <title>Nutrition</title>
+  <link rel="stylesheet" href="../../base.css?v=9">
+  <link rel="stylesheet" href="../../theme.css?v=11">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  <p class="status" id="status" role="status" data-i18n="loading">Loading…</p>
+  <main class="page" id="app" hidden>
+    <header class="bar bar-centered">
+      <a class="btn" href="../../index.html" data-i18n="home">Home</a>
+      <h1 data-i18n="title">Nutrition</h1>
+      <button type="button" id="openSettings" class="bar-icon" aria-label="Settings" data-i18n-aria="settings">⚙</button>
+    </header>
+
+    <nav class="view-toggle" aria-label="View" data-i18n-aria="view">
+      <button type="button" id="tab_day" aria-pressed="true" data-i18n="day">Day</button>
+      <button type="button" id="tab_presets" aria-pressed="false" data-i18n="presets">Presets</button>
+      <button type="button" id="tab_weight" aria-pressed="false" data-i18n="weight">Weight</button>
+      <button type="button" id="tab_trends" aria-pressed="false" data-i18n="trends">Trends</button>
+    </nav>
+
+    <div id="dayView"></div>
+    <div id="presetsView" hidden></div>
+    <div id="weightView" hidden></div>
+    <div id="trendsView" hidden></div>
+  </main>
+
+  <div class="overlay" id="settingsOverlay">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="panel-header">
+        <h2 class="panel-title" id="settingsTitle" data-i18n="settings">Settings</h2>
+        <button type="button" class="panel-close" data-close aria-label="Close" data-i18n-aria="close">×</button>
+      </div>
+      <div id="settingsBody"></div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js?v=1"></script>
+</body>
+</html>
